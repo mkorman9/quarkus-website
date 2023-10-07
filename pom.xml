@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.mkorman9</groupId>
+    <artifactId>quarkus-website</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <quarkus.version>3.4.2</quarkus.version>
+
+        <node.version>v18.16.1</node.version>
+        <npm.version>9.5.1</npm.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Quarkus -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.13.0</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-proc:full</arg>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.14.0</version>
+                <configuration>
+                    <nodeVersion>${node.version}</nodeVersion>
+                    <npmVersion>${npm.version}</npmVersion>
+                    <workingDirectory>frontend</workingDirectory>
+                    <installDirectory>target</installDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+
+                    <execution>
+                        <id>npm ci</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>build frontend</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>run-script build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/META-INF/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>frontend/build</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

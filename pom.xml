@@ -18,6 +18,9 @@
 
         <node.version>v18.16.1</node.version>
         <npm.version>9.5.1</npm.version>
+
+        <!-- change to generate-resources to build frontend when running backend in IDE -->
+        <build.frontend.phase>prepare-package</build.frontend.phase>
     </properties>
 
     <dependencyManagement>
@@ -135,7 +138,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <phase>prepare-package</phase>
+                        <phase>${build.frontend.phase}</phase>
                     </execution>
 
                     <execution>
@@ -143,10 +146,10 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>prepare-package</phase>
                         <configuration>
                             <arguments>ci</arguments>
                         </configuration>
+                        <phase>${build.frontend.phase}</phase>
                     </execution>
 
                     <execution>
@@ -154,10 +157,10 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>prepare-package</phase>
                         <configuration>
                             <arguments>run-script build</arguments>
                         </configuration>
+                        <phase>${build.frontend.phase}</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -168,7 +171,6 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -181,6 +183,7 @@
                                 </resource>
                             </resources>
                         </configuration>
+                        <phase>${build.frontend.phase}</phase>
                     </execution>
                 </executions>
             </plugin>

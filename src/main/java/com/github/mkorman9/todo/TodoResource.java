@@ -39,7 +39,7 @@ public class TodoResource {
     public void markItemDone(@RestPath UUID id) {
         try {
             todoService.markDone(id);
-        } catch (TodoItemNotFound e) {
+        } catch (TodoItemNotFoundException e) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }

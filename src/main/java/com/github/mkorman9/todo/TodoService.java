@@ -37,7 +37,7 @@ public class TodoService {
     public void markDone(UUID id) {
         items.compute(id, (idFound, item) -> {
             if (item == null) {
-                throw new TodoItemNotFound();
+                throw new TodoItemNotFoundException();
             }
 
             return item.toBuilder()

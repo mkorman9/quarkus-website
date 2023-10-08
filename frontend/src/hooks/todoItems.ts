@@ -16,13 +16,10 @@ export const useTodoItems = () => {
 
     fetch("/api/todo")
       .then(response => {
-        return response.json() as Promise<{
-          content: string;
-          createdAt: string;
-        }[]>;
+        return response.json();
       })
       .then(items => {
-        setItems(items.map(item => ({
+        setItems(items.map((item: any) => ({
           content: item.content,
           createdAt: dayjs(item.createdAt)
         })));

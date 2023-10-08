@@ -22,7 +22,7 @@ export const useTodoItems = () => {
         return response.json();
       })
       .then(responseItems => {
-        const items = responseItems.map((item: any) => ({
+        const items: TodoItem[] = responseItems.map((item: any) => ({
           createdAt: dayjs(item.createdAt),
           ...item
         }));
@@ -88,6 +88,7 @@ export const useTodoItems = () => {
     notDone.sort(
       (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
     );
+
     return [...notDone, ...done];
   };
 

@@ -2,7 +2,9 @@ import {useEffect, useState} from 'react';
 import dayjs, {Dayjs} from 'dayjs';
 
 export type TodoItem = {
+  id: string;
   content: string;
+  done: boolean;
   createdAt: Dayjs;
 };
 
@@ -20,16 +22,48 @@ export const useTodoItems = () => {
       })
       .then(items => {
         setItems(items.map((item: any) => ({
+          id: item.id,
           content: item.content,
+          done: item.done,
           createdAt: dayjs(item.createdAt)
         })));
       })
-      .catch(e => {
-        console.log(`Items loading error ${e}`);
-        setItemsLoadingError(e);
+      .catch(err => {
+        console.log(`Items loading error ${err}`);
+        setItemsLoadingError(err);
       })
       .finally(() => {
         setItemsLoaded(true);
+      });
+  };
+
+  const addItem = (content: string) => {
+    fetch('/api/todo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        content: content
+      })
+    })
+      .then(response => {
+        refreshItems();
+      })
+      .catch(err => {
+        console.log(`Item adding error ${err}`);
+      });
+  };
+
+  const markItemDone = (itemId: string) => {
+    fetch(`/api/todo/mark/${itemId}`, {
+      method: 'PUT'
+    })
+      .then(response => {
+        refreshItems();
+      })
+      .catch(err => {
+        console.log(`Item marking error ${err}`);
       });
   };
 
@@ -38,6 +72,8 @@ export const useTodoItems = () => {
   return {
     items,
     itemsLoadingError,
-    itemsLoaded
+    itemsLoaded,
+    addItem,
+    markItemDone
   };
 };

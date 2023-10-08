@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import dayjs, {Dayjs} from "dayjs";
+import {useEffect, useState} from 'react';
+import dayjs, {Dayjs} from 'dayjs';
 
 export type TodoItem = {
   content: string;
@@ -14,7 +14,7 @@ export const useTodoItems = () => {
   const refreshItems = () => {
     setItemsLoaded(false);
 
-    fetch("/api/todo")
+    fetch('/api/todo')
       .then(response => {
         return response.json();
       })
@@ -28,7 +28,7 @@ export const useTodoItems = () => {
         console.log(`Items loading error ${e}`);
         setItemsLoadingError(e);
       })
-      .finally(() =>{
+      .finally(() => {
         setItemsLoaded(true);
       });
   };
@@ -39,5 +39,5 @@ export const useTodoItems = () => {
     items,
     itemsLoadingError,
     itemsLoaded
-  }
+  };
 };

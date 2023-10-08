@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import dayjs, {Dayjs} from 'dayjs';
+import _ from 'underscore';
 
 export type TodoItem = {
   id: string;
@@ -20,13 +21,15 @@ export const useTodoItems = () => {
       .then(response => {
         return response.json();
       })
-      .then(items => {
-        setItems(items.map((item: any) => ({
+      .then(responseItems => {
+        const items = responseItems.map((item: any) => ({
           id: item.id,
           content: item.content,
           done: item.done,
           createdAt: dayjs(item.createdAt)
-        })));
+        }));
+
+        setItems(sortItems(items));
       })
       .catch(err => {
         console.log(`Items loading error ${err}`);
@@ -77,6 +80,13 @@ export const useTodoItems = () => {
       .catch(err => {
         console.log(`Item unmarking error ${err}`);
       });
+  };
+
+  const sortItems = (items: TodoItem[]) => {
+    const [done, notDone] = _.partition(items, (item) => item.done);
+    const sortedDone = _.sortBy(done, item => item.createdAt);
+    const sortedNotDone = _.sortBy(notDone, item => item.createdAt);
+    return [...sortedNotDone, ...sortedDone];
   };
 
   useEffect(() => refreshItems(), []);

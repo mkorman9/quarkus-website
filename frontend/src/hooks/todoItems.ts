@@ -84,9 +84,13 @@ export const useTodoItems = () => {
 
   const sortItems = (items: TodoItem[]) => {
     const [done, notDone] = _.partition(items, (item) => item.done);
-    const sortedDone = _.sortBy(done, item => item.createdAt).reverse();
-    const sortedNotDone = _.sortBy(notDone, item => item.createdAt).reverse();
-    return [...sortedNotDone, ...sortedDone];
+    done.sort(
+      (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
+    );
+    notDone.sort(
+      (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
+    );
+    return [...notDone, ...done];
   };
 
   useEffect(() => refreshItems(), []);

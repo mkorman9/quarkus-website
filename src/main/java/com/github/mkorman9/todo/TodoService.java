@@ -23,13 +23,16 @@ public class TodoService {
         var id = UuidCreator.getTimeOrderedEpoch();
         var now = Instant.now();
 
-        items.put(id, TodoItem.builder()
+        var existingItemId = items.putIfAbsent(id, TodoItem.builder()
             .id(id)
             .content(content)
             .done(false)
             .createdAt(now)
             .build()
         );
+        if (existingItemId != null) {
+            throw new IllegalStateException("Item ID duplication");
+        }
 
         return id;
     }

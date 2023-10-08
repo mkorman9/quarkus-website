@@ -1,12 +1,12 @@
 import './App.css';
-import TodoItemsTable from './TodoItemsTable/TodoItemsTable';
+import TodoItemsContainer from './TodoItemsContainer/TodoItemsContainer';
 
 const App = () => {
   return (
     <article className='content'>
       <div>
         <h1>TODO</h1>
-        <TodoItemsTable/>
+        <TodoItemsContainer/>
       </div>
     </article>
   );

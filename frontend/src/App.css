@@ -4,3 +4,10 @@ body {
   color: #ffffff;
   font-family: sans-serif;
 }
+
+.content {
+  margin: 1vh;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}

@@ -1,0 +1,9 @@
+.items-table {
+    border: 1px solid;
+    text-align: left;
+}
+
+.items-table-td {
+    border: 1px solid;
+    padding: 1vh;
+}

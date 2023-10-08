@@ -43,4 +43,14 @@ public class TodoResource {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
     }
+
+    @PUT
+    @Path("unmark/{id}")
+    public void unmarkItemDone(@RestPath UUID id) {
+        try {
+            todoService.unmarkDone(id);
+        } catch (TodoItemNotFoundException e) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+    }
 }

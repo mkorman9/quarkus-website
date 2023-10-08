@@ -38,18 +38,26 @@ public class TodoService {
     }
 
     public void markDone(UUID id) {
+        findAndMark(id, true);
+    }
+
+    public void unmarkDone(UUID id) {
+        findAndMark(id, false);
+    }
+
+    public void deleteAll() {
+        items.clear();
+    }
+
+    private void findAndMark(UUID id, boolean done) {
         items.compute(id, (idFound, item) -> {
             if (item == null) {
                 throw new TodoItemNotFoundException();
             }
 
             return item.toBuilder()
-                .done(true)
+                .done(done)
                 .build();
         });
-    }
-
-    public void deleteAll() {
-        items.clear();
     }
 }

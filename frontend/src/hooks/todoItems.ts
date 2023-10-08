@@ -67,6 +67,18 @@ export const useTodoItems = () => {
       });
   };
 
+  const unmarkItemDone = (itemId: string) => {
+    fetch(`/api/todo/unmark/${itemId}`, {
+      method: 'PUT'
+    })
+      .then(response => {
+        refreshItems();
+      })
+      .catch(err => {
+        console.log(`Item unmarking error ${err}`);
+      });
+  };
+
   useEffect(() => refreshItems(), []);
 
   return {
@@ -74,6 +86,7 @@ export const useTodoItems = () => {
     itemsLoadingError,
     itemsLoaded,
     addItem,
-    markItemDone
+    markItemDone,
+    unmarkItemDone
   };
 };

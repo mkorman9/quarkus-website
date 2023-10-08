@@ -47,7 +47,7 @@ class TodoResourceTest {
 
         // when
         given()
-            .when().put("/api/todo/mark/" + id1.toString())
+            .when().put("/api/todo/mark/" + id1)
             .then()
             .statusCode(204);
 
@@ -65,6 +65,41 @@ class TodoResourceTest {
         assertThat(todoItems.get(id1).content()).isEqualTo(content1);
         assertThat(todoItems.get(id2).done()).isFalse();
         assertThat(todoItems.get(id2).content()).isEqualTo(content2);
+    }
+
+    @Test
+    public void shouldUnmarkItem() {
+        // given
+        var id = given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new TodoItemAddPayload("AAA"))
+            .post("/api/todo")
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+
+        given()
+            .when().put("/api/todo/mark/" + id)
+            .then()
+            .statusCode(204);
+
+        // when
+        given()
+            .when().put("/api/todo/unmark/" + id)
+            .then()
+            .statusCode(204);
+
+        // then
+        var todoItems = given()
+            .when().get("/api/todo")
+            .then()
+            .statusCode(200)
+            .extract().body().jsonPath()
+            .getList(".", TodoItem.class);
+
+        assertThat(todoItems.size()).isEqualTo(1);
+        assertThat(todoItems.get(0).done()).isFalse();
     }
 
     @Test

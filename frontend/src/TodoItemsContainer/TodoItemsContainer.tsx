@@ -5,7 +5,6 @@ import TodoItemsAddForm from './TodoItemsAddForm/TodoItemsAddForm';
 const TodoItemsContainer = () => {
   const {
     items,
-    itemsLoaded,
     addItem,
     markItemDone,
     unmarkItemDone
@@ -22,10 +21,6 @@ const TodoItemsContainer = () => {
       unmarkItemDone(item.id);
     }
   };
-
-  if (!itemsLoaded) {
-    return <></>;
-  }
 
   return (
     <div>

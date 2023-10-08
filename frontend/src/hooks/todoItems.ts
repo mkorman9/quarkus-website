@@ -23,10 +23,8 @@ export const useTodoItems = () => {
       })
       .then(responseItems => {
         const items = responseItems.map((item: any) => ({
-          id: item.id,
-          content: item.content,
-          done: item.done,
-          createdAt: dayjs(item.createdAt)
+          createdAt: dayjs(item.createdAt),
+          ...item
         }));
 
         setItems(sortItems(items));
@@ -83,7 +81,7 @@ export const useTodoItems = () => {
   };
 
   const sortItems = (items: TodoItem[]) => {
-    const [done, notDone] = _.partition(items, (item) => item.done);
+    const [done, notDone] = _.partition(items, item => item.done);
     done.sort(
       (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
     );

@@ -84,8 +84,8 @@ export const useTodoItems = () => {
 
   const sortItems = (items: TodoItem[]) => {
     const [done, notDone] = _.partition(items, (item) => item.done);
-    const sortedDone = _.sortBy(done, item => item.createdAt);
-    const sortedNotDone = _.sortBy(notDone, item => item.createdAt);
+    const sortedDone = _.sortBy(done, item => item.createdAt).reverse();
+    const sortedNotDone = _.sortBy(notDone, item => item.createdAt).reverse();
     return [...sortedNotDone, ...sortedDone];
   };
 

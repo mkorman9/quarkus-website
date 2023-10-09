@@ -1,9 +1,27 @@
 .items-table {
     border: 1px solid;
-    text-align: left;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .items-table-td {
+    display: table-cell;
     border: 1px solid;
-    padding: 1vh;
+    margin: 0;
+    padding: 1em;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.items-table-td-mark {
+    width: 5%;
+}
+
+.items-table-td-content {
+    width: 70%;
+}
+
+.items-table-td-timestamp {
+    width: 25%;
 }

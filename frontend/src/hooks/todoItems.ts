@@ -16,6 +16,7 @@ export const useTodoItems = () => {
 
   const refreshItems = () => {
     setItemsLoaded(false);
+    setItemsLoadingError(null);
 
     fetch('/api/todo')
       .then(response => {

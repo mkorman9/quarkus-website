@@ -36,7 +36,7 @@ public class TodoResource {
     }
 
     @PUT
-    @Path("mark/{id}")
+    @Path("/mark/{id}")
     public void markItemDone(@RestPath UUID id) {
         try {
             todoService.markDone(id);
@@ -46,7 +46,7 @@ public class TodoResource {
     }
 
     @PUT
-    @Path("unmark/{id}")
+    @Path("/unmark/{id}")
     public void unmarkItemDone(@RestPath UUID id) {
         try {
             todoService.unmarkDone(id);

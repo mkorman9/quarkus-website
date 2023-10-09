@@ -1,3 +1,4 @@
+import './TodoItemsContainer.css';
 import {TodoItem, useTodoItems} from '../hooks/todoItems';
 import TodoItemsTable from './TodoItemsTable/TodoItemsTable';
 import TodoItemsAddForm from './TodoItemsAddForm/TodoItemsAddForm';
@@ -5,6 +6,7 @@ import TodoItemsAddForm from './TodoItemsAddForm/TodoItemsAddForm';
 const TodoItemsContainer = () => {
   const {
     items,
+    itemsLoadingError,
     addItem,
     markItemDone,
     unmarkItemDone
@@ -21,6 +23,10 @@ const TodoItemsContainer = () => {
       unmarkItemDone(item.id);
     }
   };
+
+  if (itemsLoadingError) {
+    return <span className='items-loading-error-text'>Items loading error!</span>;
+  }
 
   return (
     <div>

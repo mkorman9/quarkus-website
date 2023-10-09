@@ -31,7 +31,7 @@ export const useTodoItems = () => {
         setItems(sortItems(items));
       })
       .catch(err => {
-        console.log(`Items loading error ${err}`);
+        console.error(err);
         setItemsLoadingError(err);
       })
       .finally(() => {
@@ -53,7 +53,7 @@ export const useTodoItems = () => {
         refreshItems();
       })
       .catch(err => {
-        console.log(`Item adding error ${err}`);
+        console.error(err);
       });
   };
 
@@ -65,7 +65,7 @@ export const useTodoItems = () => {
         refreshItems();
       })
       .catch(err => {
-        console.log(`Item marking error ${err}`);
+        console.error(err);
       });
   };
 
@@ -77,7 +77,7 @@ export const useTodoItems = () => {
         refreshItems();
       })
       .catch(err => {
-        console.log(`Item unmarking error ${err}`);
+        console.error(err);
       });
   };
 

@@ -14,7 +14,7 @@ const TodoItemsContainer = () => {
     addItem(content);
   };
 
-  const onMarkItem = (item: TodoItem) => {
+  const onItemCheck = (item: TodoItem) => {
     if (!item.done) {
       markItemDone(item.id);
     } else {
@@ -25,7 +25,7 @@ const TodoItemsContainer = () => {
   return (
     <div>
       <TodoItemsAddForm onAddItem={onAddItem}/>
-      <TodoItemsTable items={items} onMarkItem={onMarkItem}/>
+      <TodoItemsTable items={items} onItemCheck={onItemCheck}/>
     </div>
   );
 };

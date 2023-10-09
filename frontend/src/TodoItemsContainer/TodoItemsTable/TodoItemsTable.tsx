@@ -3,11 +3,11 @@ import {TodoItem} from '../../hooks/todoItems';
 
 export type TodoItemsTableProps = {
   items: TodoItem[];
-  onMarkItem: (item: TodoItem) => void;
+  onItemCheck: (item: TodoItem) => void;
 };
 
 const TodoItemsTable = (props: TodoItemsTableProps) => {
-  const {items, onMarkItem} = props;
+  const {items, onItemCheck} = props;
 
   return (
     <table className='items-table'>
@@ -15,7 +15,7 @@ const TodoItemsTable = (props: TodoItemsTableProps) => {
         {items.map((item, i) => (
           <tr key={i}>
             <td className='items-table-td'>
-              <input type='checkbox' checked={item.done} onChange={() => onMarkItem(item)}/>
+              <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
             </td>
             <td className='items-table-td'>{item.content}</td>
             <td className='items-table-td'>{item.createdAt.format('YYYY-MM-DD HH:mm')}</td>

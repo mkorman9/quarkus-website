@@ -23,8 +23,8 @@ export const useTodoItems = () => {
       })
       .then(responseItems => {
         const items: TodoItem[] = responseItems.map((item: any) => ({
-          createdAt: dayjs(item.createdAt),
-          ...item
+          ...item,
+          createdAt: dayjs(item.createdAt)
         }));
 
         setItems(sortItems(items));

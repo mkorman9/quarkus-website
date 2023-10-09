@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @Path("/api/todo")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes({})
 public class TodoResource {
     @Inject
     TodoService todoService;

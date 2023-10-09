@@ -1,5 +1,5 @@
 import './TodoItemsAddForm.css';
-import {ChangeEvent, useState} from 'react';
+import {ChangeEvent, KeyboardEvent, useState} from 'react';
 
 export type TodoItemsAddFormProps = {
   onAddItem: (content: string) => void;
@@ -19,6 +19,14 @@ const TodoItemsAddForm = (props: TodoItemsAddFormProps) => {
     setContent('');
   };
 
+  const onKeyDownOnContent = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      onAddButtonClick();
+      return;
+    }
+  };
+
   return (
     <form className='add-item-form'>
       <input
@@ -27,6 +35,7 @@ const TodoItemsAddForm = (props: TodoItemsAddFormProps) => {
         placeholder='Buy concert tickets...'
         value={content}
         onChange={onContentChange}
+        onKeyDown={onKeyDownOnContent}
       />
       <button id='add-item-button' type='button' onClick={onAddButtonClick}>Add</button>
     </form>

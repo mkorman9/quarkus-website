@@ -2,7 +2,21 @@
 
 NOTE: This is a simplistic, non-HA setup but can be easily scaled up and adjusted for production use
 
-- Register domain and create DNS zone
+- Generate API token
+
+- Create Container Registry, log in and push image
+```
+Name: quarkus-website
+
+docker login registry.digitalocean.com
+Username: <TOKEN>
+Password: <TOKEN>
+
+docker build -t registry.digitalocean.com/quarkus-website/backend:1.0.0 .
+docker push registry.digitalocean.com/quarkus-website/backend:1.0.0
+```
+
+- Register domain and create DNS zone on DigitalOcean
 ```
 example.com
 
@@ -47,7 +61,7 @@ Apply to: backend
 export DEBIAN_FRONTEND=noninteractive
 apt update && apt upgrade -y
 
-# Docker
+# Install Docker
 apt install -y ca-certificates curl gnupg
 
 install -m 0755 -d /etc/apt/keyrings
@@ -64,6 +78,11 @@ echo \
 apt update
 
 apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Login to Container Registry
+docker login registry.digitalocean.com
+# Username: <TOKEN>
+# Password: <TOKEN>
 ```
 
 - Create Load Balancer
@@ -85,12 +104,15 @@ Name: fra1-backend-lb
 
 services:
   quarkus-website:
-    image: "quarkus-website:${APP_VERSION}"
+    image: registry.digitalocean.com/quarkus-website/backend:${APP_VERSION}
     restart: always
     ports:
       - "8080:8080"
 ```
 
 ```
-APP_VERSION="latest" docker compose up --force-recreate --detach
+export APP_VERSION="1.0.0"
+
+docker compose pull
+docker compose up --force-recreate --detach
 ```

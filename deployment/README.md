@@ -39,6 +39,24 @@ Image: Debian 12
 Size: Basic, Regular, 2 GB RAM / 2 vCPU
 Name: fra1-backend-1
 Tags: backend
+User Data: <as listed below>
+```
+
+```sh
+#!/usr/bin/env bash
+
+export DEBIAN_FRONTEND=noninteractive && \
+	apt update && apt upgrade -y && \
+	apt install -y ca-certificates curl gnupg && \
+	install -m 0755 -d /etc/apt/keyrings && \
+	curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+	chmod a+r /etc/apt/keyrings/docker.gpg && \
+	echo \
+	  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+	  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+	  tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+	apt update && \
+	apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
 - Create firewall
@@ -52,37 +70,6 @@ Rules:
         <default>
 
 Apply to: backend
-```
-
-- Connect to Droplet and configure it
-```sh
-# ssh root@<PUBLIC_DROPLET_IP>
-
-export DEBIAN_FRONTEND=noninteractive
-apt update && apt upgrade -y
-
-# Install Docker
-apt install -y ca-certificates curl gnupg
-
-install -m 0755 -d /etc/apt/keyrings
-
-curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-apt update
-
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Login to Container Registry
-docker login registry.digitalocean.com
-# Username: <TOKEN>
-# Password: <TOKEN>
 ```
 
 - Create Load Balancer
@@ -99,7 +86,21 @@ Name: fra1-backend-lb
 ```
 
 - Deploy app on the Droplet
+```sh
+# ssh root@<PUBLIC_DROPLET_IP>
+
+# create compose.yml file as listed below
+
+docker login registry.digitalocean.com
+# Username: <TOKEN>
+# Password: <TOKEN>
+
+export APP_VERSION="1.0.0"
+docker compose pull
+docker compose up --force-recreate --detach
 ```
+
+```yaml
 # compose.yml
 
 services:
@@ -108,11 +109,4 @@ services:
     restart: always
     ports:
       - "8080:8080"
-```
-
-```
-export APP_VERSION="1.0.0"
-
-docker compose pull
-docker compose up --force-recreate --detach
 ```

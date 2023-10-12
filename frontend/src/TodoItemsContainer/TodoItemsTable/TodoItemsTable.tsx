@@ -19,7 +19,7 @@ const TodoItemsTable = (props: TodoItemsTableProps) => {
         </>}
         {items.map((item, i) => (
           <tr key={i}>
-            <td>
+            <td className='items-table-mark'>
               <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
             </td>
             <td className={item.done ? 'item-done' : ''}>{item.content}</td>

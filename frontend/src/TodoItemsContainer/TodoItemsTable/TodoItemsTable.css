@@ -14,10 +14,24 @@
     max-width: 400px;
 }
 
+.items-table .items-table-mark {
+    text-align: right;
+}
+
 .items-table .items-table-status-text {
     text-align: center;
 }
 
 .item-done {
     text-decoration: line-through;
+}
+
+@media (max-width: 640px) {
+    .items-table {
+        width: 100%;
+    }
+
+    .items-table .items-table-mark {
+        width: 5%;
+    }
 }

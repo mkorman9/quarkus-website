@@ -1,8 +1,13 @@
+@font-face {
+  font-family: 'Poppins-Regular';
+  src: url('./assets/fonts/Poppins-Regular.ttf') format('truetype');
+}
+
 body {
   margin: 0;
   background-color: #313338;
   color: #ffffff;
-  font-family: sans-serif;
+  font-family: 'Poppins-Regular', sans-serif;
 }
 
 .content {

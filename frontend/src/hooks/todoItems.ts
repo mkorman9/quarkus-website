@@ -60,24 +60,34 @@ export const useTodoItems = () => {
     fetch(`/api/todo/mark/${itemId}`, {
       method: 'PUT'
     })
-      .then(response => {
-        refreshItems();
-      })
       .catch(err => {
         console.error(err);
       });
+
+    setItems(items.map(item => {
+      if (item.id === itemId) {
+        item.done = true;
+      }
+
+      return item;
+    }));
   };
 
   const unmarkItemDone = (itemId: string) => {
     fetch(`/api/todo/unmark/${itemId}`, {
       method: 'PUT'
     })
-      .then(response => {
-        refreshItems();
-      })
       .catch(err => {
         console.error(err);
       });
+
+    setItems(items.map(item => {
+      if (item.id === itemId) {
+        item.done = false;
+      }
+
+      return item;
+    }));
   };
 
   useEffect(() => refreshItems(), []);

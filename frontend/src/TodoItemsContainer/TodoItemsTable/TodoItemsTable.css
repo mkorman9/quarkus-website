@@ -1,17 +1,17 @@
 .items-table {
-    border: 1px solid;
-    width: 100%;
+    width: 400px;
     table-layout: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 17px;
 }
 
 .items-table-td {
     display: table-cell;
-    border: 1px solid;
     margin: 0;
     padding: 1em;
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    text-align: left;
+    word-wrap: break-word;
 }
 
 .items-table-td-mark {
@@ -19,9 +19,5 @@
 }
 
 .items-table-td-content {
-    width: 70%;
-}
-
-.items-table-td-timestamp {
-    width: 25%;
+    width: 95%;
 }

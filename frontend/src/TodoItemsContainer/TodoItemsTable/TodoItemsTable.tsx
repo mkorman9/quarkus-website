@@ -17,13 +17,25 @@ const TodoItemsTable = (props: TodoItemsTableProps) => {
             <td className='items-table-td'>No items</td>
           </tr>
         </>}
-        {items.map((item, i) => (
+        {items.filter(item => !item.done).map((item, i) => (
           <tr key={i}>
             <td className='items-table-td items-table-td-mark'>
               <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
             </td>
             <td className='items-table-td content'>{item.content}</td>
-            <td className='items-table-td items-table-td-timestamp'>{item.createdAt.format('YYYY-MM-DD HH:mm')}</td>
+          </tr>
+        ))}
+        {items.filter(item => item.done).length > 0 &&
+          <tr>
+            <td colSpan={2}><hr /></td>
+          </tr>
+        }
+        {items.filter(item => item.done).map((item, i) => (
+          <tr key={i}>
+            <td className='items-table-td items-table-td-mark'>
+              <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
+            </td>
+            <td className='items-table-td content'>{item.content}</td>
           </tr>
         ))}
       </tbody>

@@ -14,15 +14,15 @@ const TodoItemsTable = (props: TodoItemsTableProps) => {
       <tbody>
         {items.length === 0 && <>
           <tr>
-            <td className='items-table-td'>No items</td>
+            <td className='items-table-status-text'>No items</td>
           </tr>
         </>}
         {items.filter(item => !item.done).map((item, i) => (
           <tr key={i}>
-            <td className='items-table-td items-table-td-mark'>
+            <td>
               <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
             </td>
-            <td className='items-table-td content'>{item.content}</td>
+            <td>{item.content}</td>
           </tr>
         ))}
         {items.filter(item => item.done).length > 0 &&
@@ -32,10 +32,10 @@ const TodoItemsTable = (props: TodoItemsTableProps) => {
         }
         {items.filter(item => item.done).map((item, i) => (
           <tr key={i}>
-            <td className='items-table-td items-table-td-mark'>
+            <td>
               <input type='checkbox' checked={item.done} onChange={() => onItemCheck(item)}/>
             </td>
-            <td className='items-table-td content'>{item.content}</td>
+            <td>{item.content}</td>
           </tr>
         ))}
       </tbody>

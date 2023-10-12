@@ -32,7 +32,6 @@ const TodoItemsAddForm = (props: TodoItemsAddFormProps) => {
       <input
         id='add-item-content'
         type='text'
-        className='add-item-input'
         placeholder='Buy concert tickets...'
         value={content}
         onChange={onContentChange}
@@ -41,7 +40,6 @@ const TodoItemsAddForm = (props: TodoItemsAddFormProps) => {
       <button
         id='add-item-button'
         type='button'
-        className='add-item-button'
         onClick={onAddButtonClick}
       >
         Add

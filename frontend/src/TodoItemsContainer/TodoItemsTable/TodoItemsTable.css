@@ -1,23 +1,21 @@
 .items-table {
-    width: 400px;
     table-layout: fixed;
     margin-left: auto;
     margin-right: auto;
     font-size: 17px;
+    border: 1px dotted;
 }
 
-.items-table-td {
+.items-table td {
     display: table-cell;
     margin: 0;
     padding: 1em;
     text-align: left;
     word-wrap: break-word;
+    max-width: 400px;
 }
 
-.items-table-td-mark {
-    width: 5%;
+.items-table .items-table-status-text {
+    text-align: center;
 }
 
-.items-table-td-content {
-    width: 95%;
-}

@@ -7,24 +7,24 @@
     margin-bottom: 1em;
 }
 
-.add-item-input {
+.add-item-form input[type=text] {
     width: 500px;
     height: 2em;
     font-size: 18px;
 }
 
-.add-item-button {
+.add-item-form button {
     width: 6em;
     height: 3em;
     font-size: 14px;
 }
 
 @media (max-width: 640px) {
-    .add-item-input {
+    .add-item-form input[type=text] {
         width: 100%;
     }
 
-    .add-item-button {
+    .add-item-form button {
         width: 100%;
     }
 }

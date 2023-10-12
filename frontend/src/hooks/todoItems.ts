@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import dayjs, {Dayjs} from 'dayjs';
-import _ from 'underscore';
 
 export type TodoItem = {
   id: string;
@@ -28,7 +27,7 @@ export const useTodoItems = () => {
           createdAt: dayjs(item.createdAt)
         }));
 
-        setItems(sortItems(items));
+        setItems(items);
       })
       .catch(err => {
         console.error(err);
@@ -79,18 +78,6 @@ export const useTodoItems = () => {
       .catch(err => {
         console.error(err);
       });
-  };
-
-  const sortItems = (items: TodoItem[]) => {
-    const [done, notDone] = _.partition(items, item => item.done);
-    done.sort(
-      (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
-    );
-    notDone.sort(
-      (item1, item2) => item1.createdAt.isBefore(item2.createdAt) ? 1 : -1
-    );
-
-    return [...notDone, ...done];
   };
 
   useEffect(() => refreshItems(), []);

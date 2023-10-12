@@ -16,6 +16,13 @@ public class TodoService {
     public List<TodoItem> getItems() {
         return items.values()
             .stream()
+            .sorted((item1, item2) -> {
+                if (item1.createdAt().equals(item2.createdAt())) {
+                    return 0;
+                }
+
+                return item1.createdAt().isBefore(item2.createdAt()) ? 1 : -1;
+            })
             .toList();
     }
 

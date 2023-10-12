@@ -89,7 +89,7 @@ Name: fra1-backend-lb
 ```sh
 # ssh root@<PUBLIC_DROPLET_IP>
 
-# create compose.yml file as listed below
+# create application.properties and compose.yml files as listed below
 
 docker login registry.digitalocean.com
 # Username: <TOKEN>
@@ -98,6 +98,13 @@ docker login registry.digitalocean.com
 export APP_VERSION="1.0.0"
 docker compose pull
 docker compose up --force-recreate --detach
+```
+
+```properties
+# application.properties
+
+# all the application secrets belong here
+# quarkus.datasource.password=...
 ```
 
 ```yaml
@@ -109,4 +116,6 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    volumes:
+      - "${PWD}/application.properties:/config/application.properties:ro"
 ```

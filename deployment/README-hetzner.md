@@ -9,8 +9,8 @@ NOTE: This is a simplistic, non-HA setup but can be easily scaled up and adjuste
 example.com
 
 NS hydrogen.ns.hetzner.com 1800
-NS oxygen.ns.hetzner.com 1800
-NS helium.ns.hetzner.de 1800
+NS oxygen.ns.hetzner.com   1800
+NS helium.ns.hetzner.de    1800
 ```
 
 - Create VPC
@@ -79,5 +79,6 @@ Name: eu-quarkus-website-lb
 
 - Add DNS record for Load Balancer
 ```
-A @ <Load Balancer IP> 1800
+A    @ <Load Balancer IPv4> 1800
+AAAA @ <Load Balancer IPv6> 1800
 ```

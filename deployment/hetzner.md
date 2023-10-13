@@ -82,3 +82,39 @@ Name: eu-quarkus-website-lb
 A    @ <Load Balancer IPv4> 1800
 AAAA @ <Load Balancer IPv6> 1800
 ```
+
+- Hetzner doesn't offer private Docker registries yet, so either docker.com paid plan or another cloud provider (DigitalOcean, GCP, AWS...) needs to be used to store images
+```sh
+# Push image on local machine
+docker login <PRIVATE_REGISTRY>
+
+docker build -t <PRIVATE_REGISTRY>/quarkus-website:1.0.0 .
+docker push <PRIVATE_REGISTRY>/quarkus-website:1.0.0
+
+# And deploy later on the server using application.properties and compose.yml files listed below
+docker login <PRIVATE_REGISTRY>
+
+export APP_VERSION="1.0.0"
+docker compose pull
+docker compose up --force-recreate --detach
+```
+
+```properties
+# application.properties
+
+# all the application secrets belong here
+# quarkus.datasource.password=...
+```
+
+```yaml
+# compose.yml
+
+services:
+  quarkus-website:
+    image: <PRIVATE_REGISTRY>/quarkus-website:${APP_VERSION}
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - "${PWD}/application.properties:/config/application.properties:ro"
+```

@@ -77,7 +77,7 @@ Algorithm: Round Robin
 Name: eu-quarkus-website-lb
 ```
 
-- Add DNS record for Load Balancer
+- Add DNS records for Load Balancer
 ```
 A    @ <Load Balancer IPv4> 1800
 AAAA @ <Load Balancer IPv6> 1800

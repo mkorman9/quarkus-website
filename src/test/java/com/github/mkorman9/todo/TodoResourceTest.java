@@ -7,8 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,14 +55,13 @@ class TodoResourceTest {
             .then()
             .statusCode(200)
             .extract().body().jsonPath()
-            .getList(".", TodoItem.class)
-            .stream().collect(Collectors.toMap(TodoItem::id, Function.identity()));
+            .getList(".", TodoItem.class);
 
         assertThat(todoItems.size()).isEqualTo(2);
-        assertThat(todoItems.get(id1).done()).isTrue();
-        assertThat(todoItems.get(id1).content()).isEqualTo(content1);
-        assertThat(todoItems.get(id2).done()).isFalse();
-        assertThat(todoItems.get(id2).content()).isEqualTo(content2);
+        assertThat(todoItems.get(0).done()).isFalse();
+        assertThat(todoItems.get(0).content()).isEqualTo(content2);
+        assertThat(todoItems.get(1).done()).isTrue();
+        assertThat(todoItems.get(1).content()).isEqualTo(content1);
     }
 
     @Test

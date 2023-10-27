@@ -4,6 +4,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -16,13 +17,7 @@ public class TodoService {
     public List<TodoItem> getItems() {
         return items.values()
             .stream()
-            .sorted((item1, item2) -> {
-                if (item1.createdAt().equals(item2.createdAt())) {
-                    return 0;
-                }
-
-                return item1.createdAt().isBefore(item2.createdAt()) ? 1 : -1;
-            })
+            .sorted(Comparator.comparing(TodoItem::createdAt).reversed())
             .toList();
     }
 
@@ -63,12 +58,7 @@ public class TodoService {
                 throw new TodoItemNotFoundException();
             }
 
-            return new TodoItem(
-                item.id(),
-                item.content(),
-                done,
-                item.createdAt()
-            );
+            return item.withDone(done);
         });
     }
 }

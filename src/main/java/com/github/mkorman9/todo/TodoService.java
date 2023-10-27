@@ -30,12 +30,13 @@ public class TodoService {
         var id = UuidCreator.getTimeOrderedEpoch();
         var now = Instant.now();
 
-        var existingItemId = items.putIfAbsent(id, TodoItem.builder()
-            .id(id)
-            .content(content)
-            .done(false)
-            .createdAt(now)
-            .build()
+        var existingItemId = items.putIfAbsent(id,
+            new TodoItem(
+                id,
+                content,
+                false,
+                now
+            )
         );
         if (existingItemId != null) {
             throw new IllegalStateException("Item ID duplication");
@@ -62,9 +63,12 @@ public class TodoService {
                 throw new TodoItemNotFoundException();
             }
 
-            return item.toBuilder()
-                .done(done)
-                .build();
+            return new TodoItem(
+                item.id(),
+                item.content(),
+                done,
+                item.createdAt()
+            );
         });
     }
 }

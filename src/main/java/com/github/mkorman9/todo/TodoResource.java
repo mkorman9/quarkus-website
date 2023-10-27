@@ -1,5 +1,6 @@
 package com.github.mkorman9.todo;
 
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Path("/api/todo")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes({})
+@RunOnVirtualThread
 public class TodoResource {
     @Inject
     TodoService todoService;

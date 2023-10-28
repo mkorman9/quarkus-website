@@ -3,6 +3,7 @@ package com.github.mkorman9.todo;
 import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ public class TodoService {
     @Inject
     DataSource dataSource;
 
+    @Transactional
     public List<TodoItem> getItems() {
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()
@@ -40,6 +42,7 @@ public class TodoService {
         }
     }
 
+    @Transactional
     public UUID addItem(String content) {
         var id = UuidCreator.getTimeOrderedEpoch();
 
@@ -60,14 +63,17 @@ public class TodoService {
         return id;
     }
 
+    @Transactional
     public void markDone(UUID id) {
         findAndMark(id, true);
     }
 
+    @Transactional
     public void unmarkDone(UUID id) {
         findAndMark(id, false);
     }
 
+    @Transactional
     public void deleteAll() {
         try (var connection = dataSource.getConnection();
              var statement = connection.createStatement()

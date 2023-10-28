@@ -59,9 +59,9 @@
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
-            <groupId>com.github.f4b6a3</groupId>
-            <artifactId>uuid-creator</artifactId>
-            <version>5.3.5</version>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>4.3.0</version>
         </dependency>
 
         <dependency>

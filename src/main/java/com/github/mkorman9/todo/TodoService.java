@@ -1,6 +1,7 @@
 package com.github.mkorman9.todo;
 
-import com.github.f4b6a3.uuid.UuidCreator;
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,8 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class TodoService {
+    private static final TimeBasedEpochGenerator ID_GENERATOR = Generators.timeBasedEpochGenerator();
+
     @Inject
     DataSource dataSource;
 
@@ -45,7 +48,7 @@ public class TodoService {
 
     @Transactional
     public UUID addItem(String content) {
-        var id = UuidCreator.getTimeOrderedEpoch();
+        var id = ID_GENERATOR.generate();
 
         try (
             var connection = dataSource.getConnection();

@@ -20,8 +20,9 @@ public class TodoService {
 
     @Transactional
     public List<TodoItem> getItems() {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.createStatement()
+        try (
+            var connection = dataSource.getConnection();
+            var statement = connection.createStatement()
         ) {
             var resultSet = statement.executeQuery("SELECT * FROM todo_items ORDER BY created_at DESC");
             var items = new ArrayList<TodoItem>();
@@ -46,10 +47,11 @@ public class TodoService {
     public UUID addItem(String content) {
         var id = UuidCreator.getTimeOrderedEpoch();
 
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(
-                 "INSERT INTO todo_items (id, content, done, created_at) VALUES (?, ?, ?, ?)"
-             )
+        try (
+            var connection = dataSource.getConnection();
+            var statement = connection.prepareStatement(
+                "INSERT INTO todo_items (id, content, done, created_at) VALUES (?, ?, ?, ?)"
+            )
         ) {
             statement.setObject(1, id);
             statement.setString(2, content);
@@ -75,8 +77,9 @@ public class TodoService {
 
     @Transactional
     public void deleteAll() {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.createStatement()
+        try (
+            var connection = dataSource.getConnection();
+            var statement = connection.createStatement()
         ) {
             statement.execute("DELETE FROM todo_items");
         } catch (SQLException e) {
@@ -85,10 +88,11 @@ public class TodoService {
     }
 
     private void findAndMark(UUID id, boolean done) {
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(
-                 "UPDATE todo_items SET done=? WHERE id=?"
-             )
+        try (
+            var connection = dataSource.getConnection();
+            var statement = connection.prepareStatement(
+                "UPDATE todo_items SET done=? WHERE id=?"
+            )
         ) {
             statement.setBoolean(1, done);
             statement.setObject(2, id);

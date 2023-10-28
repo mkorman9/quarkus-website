@@ -24,7 +24,7 @@ public class TodoService {
             var connection = dataSource.getConnection();
             var statement = connection.createStatement()
         ) {
-            var resultSet = statement.executeQuery("SELECT * FROM todo_items ORDER BY created_at DESC");
+            var resultSet = statement.executeQuery("select * from todo_items order by created_at desc");
             var items = new ArrayList<TodoItem>();
 
             while (resultSet.next()) {
@@ -50,7 +50,7 @@ public class TodoService {
         try (
             var connection = dataSource.getConnection();
             var statement = connection.prepareStatement(
-                "INSERT INTO todo_items (id, content, done, created_at) VALUES (?, ?, ?, ?)"
+                "insert into todo_items (id, content, done, created_at) values (?, ?, ?, ?)"
             )
         ) {
             statement.setObject(1, id);
@@ -81,7 +81,7 @@ public class TodoService {
             var connection = dataSource.getConnection();
             var statement = connection.createStatement()
         ) {
-            statement.execute("DELETE FROM todo_items");
+            statement.execute("delete from todo_items");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +91,7 @@ public class TodoService {
         try (
             var connection = dataSource.getConnection();
             var statement = connection.prepareStatement(
-                "UPDATE todo_items SET done=? WHERE id=?"
+                "update todo_items set done=? where id=?"
             )
         ) {
             statement.setBoolean(1, done);

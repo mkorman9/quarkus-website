@@ -1,7 +1,7 @@
 package com.github.mkorman9.todo;
 
 import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
+import com.fasterxml.uuid.NoArgGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class TodoService {
-    private static final TimeBasedEpochGenerator ID_GENERATOR = Generators.timeBasedEpochGenerator();
+    private static final NoArgGenerator ID_GENERATOR = Generators.timeBasedEpochGenerator();
 
     @Inject
     DataSource dataSource;

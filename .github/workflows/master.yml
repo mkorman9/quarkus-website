@@ -22,3 +22,6 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B --no-transfer-progress package
+
+      - name: Build Docker image
+        run: docker build --tag quarkus-website:latest .

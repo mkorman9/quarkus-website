@@ -22,7 +22,7 @@ class TodoResourceTest {
     }
 
     @Test
-    public void shouldAddMarkAndRetrieveItems() {
+    public void shouldAddAndMarkAndRetrieveItemsInOrder() {
         // given
         var content1 = "AAA";
         var content2 = "BBB";
@@ -58,8 +58,10 @@ class TodoResourceTest {
             .getList(".", TodoItem.class);
 
         assertThat(todoItems.size()).isEqualTo(2);
+        assertThat(todoItems.get(0).id()).isEqualTo(id2);
         assertThat(todoItems.get(0).done()).isFalse();
         assertThat(todoItems.get(0).content()).isEqualTo(content2);
+        assertThat(todoItems.get(1).id()).isEqualTo(id1);
         assertThat(todoItems.get(1).done()).isTrue();
         assertThat(todoItems.get(1).content()).isEqualTo(content1);
     }
@@ -111,7 +113,18 @@ class TodoResourceTest {
     }
 
     @Test
-    public void shouldFailWhenMarkingNonExistingItem() {
+    public void shouldFailOnTooLongItemContent() {
+        given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new TodoItemAddPayload("A".repeat(256)))
+            .post("/api/todo")
+            .then()
+            .statusCode(400);
+    }
+
+    @Test
+    public void shouldFailOnMarkingNonExistingItem() {
         given()
             .when().put("/api/todo/mark/" + UUID.randomUUID())
             .then()

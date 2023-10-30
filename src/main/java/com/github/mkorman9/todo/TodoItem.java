@@ -9,12 +9,4 @@ public record TodoItem(
     boolean done,
     Instant createdAt
 ) {
-    public TodoItem withDone(boolean done) {
-        return new TodoItem(
-            id,
-            content,
-            done,
-            createdAt
-        );
-    }
 }

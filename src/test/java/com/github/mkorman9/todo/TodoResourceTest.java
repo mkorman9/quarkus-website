@@ -47,7 +47,7 @@ class TodoResourceTest {
         given()
             .when().put("/api/todo/mark/" + id1)
             .then()
-            .statusCode(204);
+            .statusCode(200);
 
         // then
         var todoItems = given()
@@ -81,13 +81,13 @@ class TodoResourceTest {
         given()
             .when().put("/api/todo/mark/" + id)
             .then()
-            .statusCode(204);
+            .statusCode(200);
 
         // when
         given()
             .when().put("/api/todo/unmark/" + id)
             .then()
-            .statusCode(204);
+            .statusCode(200);
 
         // then
         var todoItems = given()

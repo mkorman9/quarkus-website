@@ -14,6 +14,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestPath;
+import org.jboss.resteasy.reactive.RestResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,21 +40,17 @@ public class TodoResource {
 
     @PUT
     @Path("/mark/{id}")
-    public void markItemDone(@RestPath UUID id) {
-        try {
-            todoService.markDone(id);
-        } catch (TodoItemNotFoundException e) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+    public RestResponse<Void> markItemDone(@RestPath UUID id) {
+        return todoService.markDone(id) ?
+            RestResponse.ok() :
+            RestResponse.notFound();
     }
 
     @PUT
     @Path("/unmark/{id}")
-    public void unmarkItemDone(@RestPath UUID id) {
-        try {
-            todoService.unmarkDone(id);
-        } catch (TodoItemNotFoundException e) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+    public RestResponse<Void> unmarkItemDone(@RestPath UUID id) {
+        return todoService.unmarkDone(id) ?
+            RestResponse.ok() :
+            RestResponse.notFound();
     }
 }

@@ -69,13 +69,13 @@ public class TodoService {
     }
 
     @Transactional
-    public void markDone(UUID id) {
-        findAndMark(id, true);
+    public boolean markDone(UUID id) {
+        return findAndMark(id, true);
     }
 
     @Transactional
-    public void unmarkDone(UUID id) {
-        findAndMark(id, false);
+    public boolean unmarkDone(UUID id) {
+        return findAndMark(id, false);
     }
 
     @Transactional
@@ -90,7 +90,7 @@ public class TodoService {
         }
     }
 
-    private void findAndMark(UUID id, boolean done) {
+    private boolean findAndMark(UUID id, boolean done) {
         try (
             var connection = dataSource.getConnection();
             var statement = connection.prepareStatement(
@@ -99,11 +99,7 @@ public class TodoService {
         ) {
             statement.setBoolean(1, done);
             statement.setObject(2, id);
-            var updated = statement.executeUpdate();
-
-            if (updated == 0) {
-                throw new TodoItemNotFoundException();
-            }
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

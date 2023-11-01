@@ -35,7 +35,7 @@ Container:
     Name: eu-quarkus-website
     Registry/Image/Tag: <select pushed app image>
     Workload Profile: Consumption
-    CPU and Memory: 1 CPU, 2 GiB
+    CPU and Memory: 0.75 CPU, 1.5 GiB
     Environment Variables: <specify all needed>
 Ingress:
     Enabled
@@ -46,10 +46,15 @@ Ingress:
     Target port: 8080
 ```
 
-- Wait for the deployment and set up appropriate replicas count
+- Wait for the deployment and set up autoscaling `Revisions -> Create new revision -> Scale`
 
 ```
-Revisions -> Create new revision -> Scale -> Min/max replicas -> Create
+Min/max replicas: 0-3
+Scale Rule: Add
+    Type: HTTP scaling
+    Concurrent requests: 150
+
+Create
 ```
 
 - Set up custom domain

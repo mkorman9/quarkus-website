@@ -49,7 +49,7 @@ Ingress:
 - Wait for the deployment and set up autoscaling `Revisions -> Create new revision -> Scale`
 
 ```
-Min/max replicas: 0-3
+Min/max replicas: 1-3
 Scale Rule: Add
     Type: HTTP scaling
     Concurrent requests: 150

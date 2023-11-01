@@ -7,11 +7,19 @@ Azure Container Apps provide cheap and easy way of deploying the app. It fits pr
 - Create Container Registry and push app image
 
 ```
-Name: eu-quarkus-website
+Name: euquarkuswebsite
 Resource Group: eu-quarkus-website
 Region: West Europe
 Pricing Plan: Basic
 ```
+
+```sh
+az acr login --name euquarkuswebsite
+docker tag quarkus-website:latest euquarkuswebsite.azurecr.io/quarkus-website:latest
+docker push euquarkuswebsite.azurecr.io/quarkus-website:latest
+```
+
+After successful deployment go to `Access Keys` and enable `Admin user`
 
 - Create Container App
 

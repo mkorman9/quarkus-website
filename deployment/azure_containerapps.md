@@ -106,6 +106,6 @@ In Environment variables of the app container add
 
 ```
 QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/postgres?sslmode=require
-QUARKUS_DATASOURCE_USERNAME: pgadmin@eu-quarkus-website-db
+QUARKUS_DATASOURCE_USERNAME: pgadmin
 QUARKUS_DATASOURCE_PASSWORD: <reference to the db-password secret>
 ```

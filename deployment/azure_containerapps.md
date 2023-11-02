@@ -58,7 +58,8 @@ Scale Rule: Remove existing rule and add new one
 Create
 ```
 
-NOTE: This value should be tuned after observing metrics under `Monitoring -> Metrics`
+NOTE: These values (max replicas and concurrent requests, but also CPU and Memory for containers) 
+should be tuned after observing metrics under `Monitoring -> Metrics`
 
 - Set up custom domain
 
@@ -71,4 +72,6 @@ Domain: example.com
 Add given A/TXT records to the DNS Zone and wait for validation
 ```
 
-NOTE: Azure provides client's source address in `X-Forwarded-For` header.
+### Notes
+
+- Azure provides client's source address in `X-Forwarded-For` header.

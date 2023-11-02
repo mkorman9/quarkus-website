@@ -75,3 +75,37 @@ Add given A/TXT records to the DNS Zone and wait for validation
 ### Notes
 
 - Azure provides client's source address in `X-Forwarded-For` header.
+
+### Bonus: Postgres deployment
+
+Create new `Azure Database for PostgreSQL servers`
+
+```
+Choose Flexible server
+    Resource Group: eu-quarkus-website
+    Server name: eu-quarkus-website-db
+    Region: West Europe
+    PostgreSQL version: 15
+    Authentication method: PostgreSQL authentication only
+    Admin username: pgadmin
+    Password: <openssl rand 32 | base64>
+    
+    Connectivity method: Public access (allowed IP addresses)
+    Allow public access from any Azure service within Azure to this server: ON
+```
+
+In Secrets of the app add
+
+```
+Key: db-password
+Type: Container Apps Secret
+Value: <password of pgadmin user>
+```
+
+In Environment variables of the app container add
+
+```
+QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/postgres?sslmode=require
+QUARKUS_DATASOURCE_USERNAME: pgadmin@eu-quarkus-website-db
+QUARKUS_DATASOURCE_PASSWORD: <reference to the db-password secret>
+```

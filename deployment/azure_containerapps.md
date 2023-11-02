@@ -50,12 +50,15 @@ Ingress:
 
 ```
 Min/max replicas: 1-3
-Scale Rule: Add
+Scale Rule: Remove existing rule and add new one
+    Name: http-rule-1000
     Type: HTTP scaling
-    Concurrent requests: 150
+    Concurrent requests: 1000
 
 Create
 ```
+
+NOTE: This value should be tuned after observing metrics under `Monitoring -> Metrics`
 
 - Set up custom domain
 

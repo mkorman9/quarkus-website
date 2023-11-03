@@ -120,6 +120,6 @@ Value: <password of quarkus_website_app user>
 
 ```
 QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/quarkus_website?sslmode=require
-QUARKUS_DATASOURCE_USERNAME: quarkus_website
+QUARKUS_DATASOURCE_USERNAME: quarkus_website_app
 QUARKUS_DATASOURCE_PASSWORD: <reference to the db-password secret>
 ```

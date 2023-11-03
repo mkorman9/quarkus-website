@@ -78,7 +78,7 @@ Add given A/TXT records to the DNS Zone and wait for validation
 
 ### Bonus: Postgres deployment
 
-Create new `Azure Database for PostgreSQL servers`
+- Create new `Azure Database for PostgreSQL servers`
 
 ```
 Choose Flexible server
@@ -92,20 +92,34 @@ Choose Flexible server
     
     Connectivity method: Public access (allowed IP addresses)
     Allow public access from any Azure service within Azure to this server: ON
+    Add current client IP address: enable TEMPORARILY and delete after configuration
 ```
 
-In Secrets of the app add
+- Connect to the DB (`psql -h eu-quarkus-website-db.postgres.database.azure.com -p 5432 -U pgadmin postgres`) and run
+
+```sql
+CREATE DATABASE quarkus_website;
+CREATE USER quarkus_website_app WITH ENCRYPTED PASSWORD '<openssl rand 32 | base64>';
+
+\c quarkus_website
+
+GRANT ALL ON SCHEMA public TO quarkus_website_app;
+```
+
+Remove current IP address in Networking tab. 
+
+- In Secrets of the app add
 
 ```
 Key: db-password
 Type: Container Apps Secret
-Value: <password of pgadmin user>
+Value: <password of quarkus_website_app user>
 ```
 
-In Environment variables of the app container add
+- In Environment variables of the app container add
 
 ```
-QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/postgres?sslmode=require
-QUARKUS_DATASOURCE_USERNAME: pgadmin
+QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/quarkus_website?sslmode=require
+QUARKUS_DATASOURCE_USERNAME: quarkus_website
 QUARKUS_DATASOURCE_PASSWORD: <reference to the db-password secret>
 ```

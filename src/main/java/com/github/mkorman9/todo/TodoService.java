@@ -62,6 +62,12 @@ public class TodoService {
             statement.setTimestamp(4, Timestamp.from(Instant.now()));
             statement.execute();
         } catch (SQLException e) {
+//            if (e instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
+//                if ("todo_items_pkey".equals(psqlException.getServerErrorMessage().getConstraint())) {
+//                    // duplicate
+//                }
+//            }
+
             throw new RuntimeException(e);
         }
 

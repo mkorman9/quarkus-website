@@ -4,7 +4,6 @@ import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -21,7 +20,6 @@ public class TodoService {
     @Inject
     DataSource dataSource;
 
-    @Transactional
     public List<TodoItem> getItems() {
         try (
             var connection = dataSource.getConnection();
@@ -48,7 +46,6 @@ public class TodoService {
         }
     }
 
-    @Transactional
     public UUID addItem(String content) {
         var id = ID_GENERATOR.generate();
 
@@ -76,17 +73,14 @@ public class TodoService {
         return id;
     }
 
-    @Transactional
     public boolean markDone(UUID id) {
         return findAndMark(id, true);
     }
 
-    @Transactional
     public boolean unmarkDone(UUID id) {
         return findAndMark(id, false);
     }
 
-    @Transactional
     public void deleteAll() {
         try (
             var connection = dataSource.getConnection();

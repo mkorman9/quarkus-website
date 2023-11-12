@@ -27,7 +27,9 @@ public class TodoService {
             var connection = dataSource.getConnection();
             var statement = connection.createStatement()
         ) {
-            var resultSet = statement.executeQuery("select * from todo_items order by created_at desc");
+            var resultSet = statement.executeQuery(
+                "select id, content, done, created_at from todo_items order by created_at desc"
+            );
             var items = new ArrayList<TodoItem>();
 
             while (resultSet.next()) {

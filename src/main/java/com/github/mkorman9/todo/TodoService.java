@@ -93,31 +93,35 @@ public class TodoService {
     }
 
     private boolean findAndMark(UUID id, boolean done) {
-        try (
-            var connection = dataSource.getConnection();
-            var updateItemStatement = connection.prepareStatement(
-                "update todo_items set done=? where id=?"
-            );
-            var insertActionStatement = connection.prepareStatement(
-                "insert into todo_items_mark_actions (id, item_id, target_value, created_at) values (?, ?, ?, ?)"
-            )
-        ) {
+        try (var connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
 
-            updateItemStatement.setBoolean(1, done);
-            updateItemStatement.setObject(2, id);
-            if (updateItemStatement.executeUpdate() == 0) {
-                return false;
+            try (
+                var updateItemStatement = connection.prepareStatement(
+                    "update todo_items set done=? where id=?"
+                );
+                var insertActionStatement = connection.prepareStatement(
+                    "insert into todo_items_mark_actions (id, item_id, target_value, created_at) values (?, ?, ?, ?)"
+                )
+            ) {
+                updateItemStatement.setBoolean(1, done);
+                updateItemStatement.setObject(2, id);
+                if (updateItemStatement.executeUpdate() == 0) {
+                    return false;
+                }
+
+                insertActionStatement.setObject(1, ID_GENERATOR.generate());
+                insertActionStatement.setObject(2, id);
+                insertActionStatement.setBoolean(3, done);
+                insertActionStatement.setTimestamp(4, Timestamp.from(Instant.now()));
+                insertActionStatement.execute();
+
+                connection.commit();
+                return true;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
             }
-
-            insertActionStatement.setObject(1, ID_GENERATOR.generate());
-            insertActionStatement.setObject(2, id);
-            insertActionStatement.setBoolean(3, done);
-            insertActionStatement.setTimestamp(4, Timestamp.from(Instant.now()));
-            insertActionStatement.execute();
-
-            connection.commit();
-            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

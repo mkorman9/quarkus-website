@@ -20,8 +20,8 @@ public class TodoService {
     Jdbi jdbi;
 
     public List<TodoItem> getItems() {
-        return jdbi.withHandle(handle -> {
-            return handle.createQuery(
+        return jdbi.withHandle(handle ->
+            handle.createQuery(
                     "select id, content, done, created_at from todo_items order by created_at desc"
                 )
                 .map((rs, ctx) -> new TodoItem(
@@ -30,16 +30,16 @@ public class TodoService {
                     rs.getBoolean("done"),
                     rs.getTimestamp("created_at").toInstant()
                 ))
-                .list();
-        });
+                .list()
+        );
     }
 
     public UUID addItem(String content) {
         var id = ID_GENERATOR.generate();
 
         try {
-            jdbi.withHandle(handle -> {
-                return handle.createUpdate(
+            jdbi.withHandle(handle ->
+                handle.createUpdate(
                         "insert into todo_items (id, content, done, created_at) " +
                             "values (:id, :content, :done, :createdAt)"
                     )
@@ -47,8 +47,8 @@ public class TodoService {
                     .bind("content", content)
                     .bind("done", false)
                     .bind("createdAt", Timestamp.from(Instant.now()))
-                    .execute();
-            });
+                    .execute()
+            );
         } catch (JdbiException e) {
 //            if (e.getCause() instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
 //                if ("todo_items_pkey".equals(psqlException.getServerErrorMessage().getConstraint())) {
@@ -71,12 +71,10 @@ public class TodoService {
     }
 
     public void deleteAll() {
-        jdbi.withHandle(handle -> {
-            return handle.createUpdate(
-                    "delete from todo_items"
-                )
-                .execute();
-        });
+        jdbi.withHandle(handle ->
+            handle.createUpdate("delete from todo_items")
+                .execute()
+        );
     }
 
     private boolean findAndMark(UUID id, boolean done) {

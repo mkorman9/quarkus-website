@@ -78,6 +78,7 @@ Container:
         QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://eu-quarkus-website-db.postgres.database.azure.com:5432/quarkus_website?sslmode=require
         QUARKUS_DATASOURCE_USERNAME: quarkus_website_app
         QUARKUS_DATASOURCE_PASSWORD: <will point to a secret later>
+        (Optionally for high traffic) QUARKUS_DATASOURCE_JDBC_MAX_SIZE: <20 is the default>
 Ingress:
     Enabled
     Ingress traffic: Accept traffic from anywhere
@@ -128,3 +129,4 @@ Add given A/TXT records to the DNS Zone and wait for validation
 ## Notes
 
 - Azure provides client's source address in `X-Forwarded-For` header.
+- The whole stack (0.75 CPU/1.5 GiB Container + Registry + B1ms Database) costs around 1.81 EUR per day (54.3 per month)

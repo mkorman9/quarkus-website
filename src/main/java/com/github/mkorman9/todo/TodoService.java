@@ -40,8 +40,8 @@ public class TodoService {
         try {
             jdbi.withHandle(handle -> {
                 return handle.createUpdate(
-                    "insert into todo_items (id, content, done, created_at) " +
-                        "values (:id, :content, :done, :createdAt)"
+                        "insert into todo_items (id, content, done, created_at) " +
+                            "values (:id, :content, :done, :createdAt)"
                     )
                     .bind("id", id)
                     .bind("content", content)
@@ -91,8 +91,8 @@ public class TodoService {
             }
 
             transaction.createUpdate(
-                "insert into todo_items_mark_actions (id, item_id, target_value, created_at) " +
-                    "values (:id, :itemId, :value, :createdAt)"
+                    "insert into todo_items_mark_actions (id, item_id, target_value, created_at) " +
+                        "values (:id, :itemId, :value, :createdAt)"
                 )
                 .bind("id", ID_GENERATOR.generate())
                 .bind("itemId", id)

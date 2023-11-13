@@ -4,12 +4,11 @@ import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.JdbiException;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,56 +17,46 @@ public class TodoService {
     private static final NoArgGenerator ID_GENERATOR = Generators.timeBasedEpochGenerator();
 
     @Inject
-    DataSource dataSource;
+    Jdbi jdbi;
 
     public List<TodoItem> getItems() {
-        try (
-            var connection = dataSource.getConnection();
-            var statement = connection.createStatement()
-        ) {
-            var resultSet = statement.executeQuery(
-                "select id, content, done, created_at from todo_items order by created_at desc"
-            );
-            var items = new ArrayList<TodoItem>();
-
-            while (resultSet.next()) {
-                var item = new TodoItem(
-                    (UUID) resultSet.getObject("id"),
-                    resultSet.getString("content"),
-                    resultSet.getBoolean("done"),
-                    resultSet.getTimestamp("created_at").toInstant()
-                );
-                items.add(item);
-            }
-
-            return items;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return jdbi.withHandle(handle -> {
+            return handle.createQuery(
+                    "select id, content, done, created_at from todo_items order by created_at desc"
+                )
+                .map((rs, ctx) -> new TodoItem(
+                    (UUID) rs.getObject("id"),
+                    rs.getString("content"),
+                    rs.getBoolean("done"),
+                    rs.getTimestamp("created_at").toInstant()
+                ))
+                .list();
+        });
     }
 
     public UUID addItem(String content) {
         var id = ID_GENERATOR.generate();
 
-        try (
-            var connection = dataSource.getConnection();
-            var statement = connection.prepareStatement(
-                "insert into todo_items (id, content, done, created_at) values (?, ?, ?, ?)"
-            )
-        ) {
-            statement.setObject(1, id);
-            statement.setString(2, content);
-            statement.setBoolean(3, false);
-            statement.setTimestamp(4, Timestamp.from(Instant.now()));
-            statement.execute();
-        } catch (SQLException e) {
-//            if (e instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
+        try {
+            jdbi.withHandle(handle -> {
+                return handle.createUpdate(
+                    "insert into todo_items (id, content, done, created_at) " +
+                        "values (:id, :content, :done, :createdAt)"
+                    )
+                    .bind("id", id)
+                    .bind("content", content)
+                    .bind("done", false)
+                    .bind("createdAt", Timestamp.from(Instant.now()))
+                    .execute();
+            });
+        } catch (JdbiException e) {
+//            if (e.getCause() instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
 //                if ("todo_items_pkey".equals(psqlException.getServerErrorMessage().getConstraint())) {
 //                    // duplicate
 //                }
 //            }
 
-            throw new RuntimeException(e);
+            throw e;
         }
 
         return id;
@@ -82,48 +71,36 @@ public class TodoService {
     }
 
     public void deleteAll() {
-        try (
-            var connection = dataSource.getConnection();
-            var statement = connection.createStatement()
-        ) {
-            statement.execute("delete from todo_items");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbi.withHandle(handle -> {
+            return handle.createCall(
+                    "delete from todo_items"
+                )
+                .invoke();
+        });
     }
 
     private boolean findAndMark(UUID id, boolean done) {
-        try (var connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
+        return jdbi.inTransaction(transaction -> {
+            var updated = transaction.createUpdate("update todo_items set done=:done where id=:id")
+                .bind("id", id)
+                .bind("done", done)
+                .execute();
 
-            try (
-                var updateItemStatement = connection.prepareStatement(
-                    "update todo_items set done=? where id=?"
-                );
-                var insertActionStatement = connection.prepareStatement(
-                    "insert into todo_items_mark_actions (id, item_id, target_value, created_at) values (?, ?, ?, ?)"
-                )
-            ) {
-                updateItemStatement.setBoolean(1, done);
-                updateItemStatement.setObject(2, id);
-                if (updateItemStatement.executeUpdate() == 0) {
-                    return false;
-                }
-
-                insertActionStatement.setObject(1, ID_GENERATOR.generate());
-                insertActionStatement.setObject(2, id);
-                insertActionStatement.setBoolean(3, done);
-                insertActionStatement.setTimestamp(4, Timestamp.from(Instant.now()));
-                insertActionStatement.execute();
-
-                connection.commit();
-                return true;
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
+            if (updated == 0) {
+                return false;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+            transaction.createUpdate(
+                "insert into todo_items_mark_actions (id, item_id, target_value, created_at) " +
+                    "values (:id, :itemId, :value, :createdAt)"
+                )
+                .bind("id", ID_GENERATOR.generate())
+                .bind("itemId", id)
+                .bind("value", done)
+                .bind("createdAt", Timestamp.from(Instant.now()))
+                .execute();
+
+            return true;
+        });
     }
 }

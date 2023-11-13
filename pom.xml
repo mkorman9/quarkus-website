@@ -63,6 +63,11 @@
             <artifactId>java-uuid-generator</artifactId>
             <version>4.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-core</artifactId>
+            <version>3.41.3</version>
+        </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>

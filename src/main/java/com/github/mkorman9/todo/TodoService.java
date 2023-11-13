@@ -72,10 +72,10 @@ public class TodoService {
 
     public void deleteAll() {
         jdbi.withHandle(handle -> {
-            return handle.createCall(
+            return handle.createUpdate(
                     "delete from todo_items"
                 )
-                .invoke();
+                .execute();
         });
     }
 

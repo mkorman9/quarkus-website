@@ -6,8 +6,9 @@ create table todo_items (
 );
 
 create table todo_items_mark_actions (
-    id           uuid constraint todo_items_mark_actions_pkey primary key,
-    item_id      uuid constraint todo_items_mark_actions__todo_items_fkey references todo_items(id) on delete cascade,
+    id           uuid       constraint todo_items_mark_actions_pkey primary key,
+    item_id      uuid       constraint todo_items_mark_actions__todo_items_fkey
+        references todo_items(id) on delete cascade on update cascade,
     target_value boolean,
     created_at   timestamp
 );

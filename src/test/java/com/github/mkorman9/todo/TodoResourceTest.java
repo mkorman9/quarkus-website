@@ -45,7 +45,7 @@ class TodoResourceTest {
 
         // when
         given()
-            .when().put("/api/todo/mark/" + id1)
+            .when().post("/api/todo/mark/" + id1)
             .then()
             .statusCode(200);
 
@@ -79,13 +79,13 @@ class TodoResourceTest {
             .extract().body().as(UUID.class);
 
         given()
-            .when().put("/api/todo/mark/" + id)
+            .when().post("/api/todo/mark/" + id)
             .then()
             .statusCode(200);
 
         // when
         given()
-            .when().put("/api/todo/unmark/" + id)
+            .when().post("/api/todo/unmark/" + id)
             .then()
             .statusCode(200);
 
@@ -126,7 +126,7 @@ class TodoResourceTest {
     @Test
     public void shouldFailOnMarkingNonExistingItem() {
         given()
-            .when().put("/api/todo/mark/" + UUID.randomUUID())
+            .when().post("/api/todo/mark/" + UUID.randomUUID())
             .then()
             .statusCode(400);
     }
@@ -145,7 +145,7 @@ class TodoResourceTest {
 
         // when then
         given()
-            .when().put("/api/todo/unmark/" + id)
+            .when().post("/api/todo/unmark/" + id)
             .then()
             .statusCode(400);
     }
@@ -163,13 +163,13 @@ class TodoResourceTest {
             .extract().body().as(UUID.class);
 
         given()
-            .when().put("/api/todo/mark/" + id)
+            .when().post("/api/todo/mark/" + id)
             .then()
             .statusCode(200);
 
         // when then
         given()
-            .when().put("/api/todo/mark/" + id)
+            .when().post("/api/todo/mark/" + id)
             .then()
             .statusCode(400);
     }

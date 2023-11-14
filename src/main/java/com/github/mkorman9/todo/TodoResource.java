@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
@@ -37,7 +36,7 @@ public class TodoResource {
         return todoService.addItem(payload.content());
     }
 
-    @PUT
+    @POST
     @Path("/mark/{id}")
     public RestResponse<Void> markItemDone(@RestPath UUID id) {
         return todoService.markDone(id) ?
@@ -45,7 +44,7 @@ public class TodoResource {
             RestResponse.status(Response.Status.BAD_REQUEST);
     }
 
-    @PUT
+    @POST
     @Path("/unmark/{id}")
     public RestResponse<Void> unmarkItemDone(@RestPath UUID id) {
         return todoService.unmarkDone(id) ?

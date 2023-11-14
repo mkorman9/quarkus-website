@@ -58,7 +58,7 @@ export const useTodoItems = () => {
 
   const markItemDone = (itemId: string) => {
     fetch(`/api/todo/mark/${itemId}`, {
-      method: 'PUT'
+      method: 'POST'
     })
       .catch(err => {
         console.error(err);
@@ -75,7 +75,7 @@ export const useTodoItems = () => {
 
   const unmarkItemDone = (itemId: string) => {
     fetch(`/api/todo/unmark/${itemId}`, {
-      method: 'PUT'
+      method: 'POST'
     })
       .catch(err => {
         console.error(err);

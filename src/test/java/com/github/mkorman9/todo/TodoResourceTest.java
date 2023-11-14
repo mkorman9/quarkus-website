@@ -128,6 +128,49 @@ class TodoResourceTest {
         given()
             .when().put("/api/todo/mark/" + UUID.randomUUID())
             .then()
-            .statusCode(404);
+            .statusCode(400);
+    }
+
+    @Test
+    public void shouldFailOnUnmarkingNotMarkedItem() {
+        // given
+        var id = given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new TodoItemAddPayload("AAA"))
+            .post("/api/todo")
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+
+        // when then
+        given()
+            .when().put("/api/todo/unmark/" + id)
+            .then()
+            .statusCode(400);
+    }
+
+    @Test
+    public void shouldFailOnMarkingAlreadyMarkedItem() {
+        // given
+        var id = given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new TodoItemAddPayload("AAA"))
+            .post("/api/todo")
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+
+        given()
+            .when().put("/api/todo/mark/" + id)
+            .then()
+            .statusCode(200);
+
+        // when then
+        given()
+            .when().put("/api/todo/mark/" + id)
+            .then()
+            .statusCode(400);
     }
 }

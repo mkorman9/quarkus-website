@@ -36,19 +36,31 @@ public class TodoService {
 
     public UUID addItem(String content) {
         var id = ID_GENERATOR.generate();
+        var now = Instant.now();
 
         try {
-            jdbi.withHandle(handle ->
-                handle.createUpdate(
+            jdbi.useTransaction(transaction -> {
+                transaction.createUpdate(
                         "insert into todo_items (id, content, done, created_at) " +
                             "values (:id, :content, :done, :createdAt)"
                     )
                     .bind("id", id)
                     .bind("content", content)
                     .bind("done", false)
-                    .bind("createdAt", Timestamp.from(Instant.now()))
-                    .execute()
-            );
+                    .bind("createdAt", Timestamp.from(now))
+                    .execute();
+
+                transaction.createUpdate(
+                        "insert into todo_items_actions (id, item_id, action_type, target_value, created_at) " +
+                            "values (:id, :itemId, :actionType, :value, :createdAt)"
+                    )
+                    .bind("id", ID_GENERATOR.generate())
+                    .bind("itemId", id)
+                    .bind("actionType", "create")
+                    .bind("value", false)
+                    .bind("createdAt", Timestamp.from(now))
+                    .execute();
+            });
         } catch (JdbiException e) {
 //            if (e.getCause() instanceof PSQLException psqlException && psqlException.getServerErrorMessage() != null) {
 //                if ("todo_items_pkey".equals(psqlException.getServerErrorMessage().getConstraint())) {
@@ -79,9 +91,11 @@ public class TodoService {
 
     private boolean findAndMark(UUID id, boolean done) {
         return jdbi.inTransaction(transaction -> {
-            var updated = transaction.createUpdate("update todo_items set done=:done where id=:id")
+            var updated = transaction.createUpdate(
+                    "update todo_items set done=:value where id=:id and done != :value"
+                )
                 .bind("id", id)
-                .bind("done", done)
+                .bind("value", done)
                 .execute();
 
             if (updated == 0) {
@@ -89,11 +103,12 @@ public class TodoService {
             }
 
             transaction.createUpdate(
-                    "insert into todo_items_mark_actions (id, item_id, target_value, created_at) " +
-                        "values (:id, :itemId, :value, :createdAt)"
+                    "insert into todo_items_actions (id, item_id, action_type, target_value, created_at) " +
+                        "values (:id, :itemId, :actionType, :value, :createdAt)"
                 )
                 .bind("id", ID_GENERATOR.generate())
                 .bind("itemId", id)
+                .bind("actionType", "update")
                 .bind("value", done)
                 .bind("createdAt", Timestamp.from(Instant.now()))
                 .execute();

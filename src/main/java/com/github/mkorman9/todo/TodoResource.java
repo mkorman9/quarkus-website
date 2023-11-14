@@ -11,6 +11,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -41,7 +42,7 @@ public class TodoResource {
     public RestResponse<Void> markItemDone(@RestPath UUID id) {
         return todoService.markDone(id) ?
             RestResponse.ok() :
-            RestResponse.notFound();
+            RestResponse.status(Response.Status.BAD_REQUEST);
     }
 
     @PUT
@@ -49,6 +50,6 @@ public class TodoResource {
     public RestResponse<Void> unmarkItemDone(@RestPath UUID id) {
         return todoService.unmarkDone(id) ?
             RestResponse.ok() :
-            RestResponse.notFound();
+            RestResponse.status(Response.Status.BAD_REQUEST);
     }
 }

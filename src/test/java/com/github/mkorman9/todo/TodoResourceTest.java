@@ -1,6 +1,7 @@
 package com.github.mkorman9.todo;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.AfterEach;
@@ -26,32 +27,22 @@ class TodoResourceTest {
         // given
         var content1 = "AAA";
         var content2 = "BBB";
-        var id1 = given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload(content1))
-            .post("/api/todo")
+        var id1 = addItem(content1)
             .then()
             .statusCode(200)
             .extract().body().as(UUID.class);
-        var id2 = given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload(content2))
-            .post("/api/todo")
+        var id2 = addItem(content2)
             .then()
             .statusCode(200)
             .extract().body().as(UUID.class);
 
         // when
-        given()
-            .when().post("/api/todo/mark/" + id1)
+        markItem(id1)
             .then()
             .statusCode(200);
 
         // then
-        var todoItems = given()
-            .when().get("/api/todo")
+        var todoItems = getItems()
             .then()
             .statusCode(200)
             .extract().body().jsonPath()
@@ -69,29 +60,22 @@ class TodoResourceTest {
     @Test
     public void shouldUnmarkItem() {
         // given
-        var id = given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload("AAA"))
-            .post("/api/todo")
+        var id = addItem("AAA")
             .then()
             .statusCode(200)
             .extract().body().as(UUID.class);
 
-        given()
-            .when().post("/api/todo/mark/" + id)
+        markItem(id)
             .then()
             .statusCode(200);
 
         // when
-        given()
-            .when().post("/api/todo/unmark/" + id)
+        unmarkItem(id)
             .then()
             .statusCode(200);
 
         // then
-        var todoItems = given()
-            .when().get("/api/todo")
+        var todoItems = getItems()
             .then()
             .statusCode(200)
             .extract().body().jsonPath()
@@ -103,30 +87,21 @@ class TodoResourceTest {
 
     @Test
     public void shouldFailOnEmptyItemContent() {
-        given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload(""))
-            .post("/api/todo")
+        addItem("")
             .then()
             .statusCode(400);
     }
 
     @Test
     public void shouldFailOnTooLongItemContent() {
-        given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload("A".repeat(256)))
-            .post("/api/todo")
+        addItem("A".repeat(256))
             .then()
             .statusCode(400);
     }
 
     @Test
     public void shouldFailOnMarkingNonExistingItem() {
-        given()
-            .when().post("/api/todo/mark/" + UUID.randomUUID())
+        markItem(UUID.randomUUID())
             .then()
             .statusCode(400);
     }
@@ -134,18 +109,13 @@ class TodoResourceTest {
     @Test
     public void shouldFailOnUnmarkingNotMarkedItem() {
         // given
-        var id = given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload("AAA"))
-            .post("/api/todo")
+        var id = addItem("AAA")
             .then()
             .statusCode(200)
             .extract().body().as(UUID.class);
 
         // when then
-        given()
-            .when().post("/api/todo/unmark/" + id)
+        unmarkItem(id)
             .then()
             .statusCode(400);
     }
@@ -153,24 +123,44 @@ class TodoResourceTest {
     @Test
     public void shouldFailOnMarkingAlreadyMarkedItem() {
         // given
-        var id = given()
-            .when()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(new TodoItemAddPayload("AAA"))
-            .post("/api/todo")
+        var id = addItem("AAA")
             .then()
             .statusCode(200)
             .extract().body().as(UUID.class);
 
-        given()
-            .when().post("/api/todo/mark/" + id)
+        markItem(id)
             .then()
             .statusCode(200);
 
         // when then
-        given()
-            .when().post("/api/todo/mark/" + id)
+        markItem(id)
             .then()
             .statusCode(400);
+    }
+
+    private Response getItems() {
+        return given()
+            .when()
+            .get("/api/todo");
+    }
+
+    private Response addItem(String content) {
+        return given()
+            .when()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new TodoItemAddPayload(content))
+            .post("/api/todo");
+    }
+
+    private Response markItem(UUID id) {
+        return given()
+            .when()
+            .post("/api/todo/mark/" + id);
+    }
+
+    private Response unmarkItem(UUID id) {
+        return given()
+            .when()
+            .post("/api/todo/unmark/" + id);
     }
 }

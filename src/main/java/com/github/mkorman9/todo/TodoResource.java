@@ -5,16 +5,17 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
-import java.util.List;
 import java.util.UUID;
 
 @Path("/api/todo")
@@ -24,10 +25,19 @@ import java.util.UUID;
 public class TodoResource {
     @Inject
     TodoService todoService;
-
     @GET
-    public List<TodoItem> getTodoItems() {
-        return todoService.getItems();
+    public TodoItemsPage getTodoItems(
+        @QueryParam("token") UUID token,
+        @QueryParam("limit") @DefaultValue("10") int limit
+    ) {
+        if (limit < 1) {
+            limit = 1;
+        }
+        if (limit > 100) {
+            limit = 100;
+        }
+
+        return todoService.getItemsPage(token, limit);
     }
 
     @POST

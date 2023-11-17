@@ -8,6 +8,11 @@ export type TodoItem = {
   createdAt: Dayjs;
 };
 
+export type TodoItemsPage = {
+  items: TodoItem[];
+  nextPageToken: string;
+};
+
 export const useTodoItems = () => {
   const [items, setItems] = useState<TodoItem[]>([]);
   const [itemsLoadingError, setItemsLoadingError] = useState<unknown>(null);
@@ -21,8 +26,9 @@ export const useTodoItems = () => {
       .then(response => {
         return response.json();
       })
-      .then(responseItems => {
-        const items: TodoItem[] = responseItems.map((item: any) => ({
+      .then(response => {
+        const page: TodoItemsPage = response;
+        const items: TodoItem[] = page.items.map(item => ({
           ...item,
           createdAt: dayjs(item.createdAt)
         }));

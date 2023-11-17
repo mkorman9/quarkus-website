@@ -42,11 +42,11 @@ class TodoResourceTest {
             .statusCode(200);
 
         // then
-        var todoItems = getItems()
+        var todoItems = getAllItems()
             .then()
             .statusCode(200)
-            .extract().body().jsonPath()
-            .getList(".", TodoItem.class);
+            .extract().body().as(TodoItemsPage.class)
+            .items();
 
         assertThat(todoItems.size()).isEqualTo(2);
         assertThat(todoItems.get(0).id()).isEqualTo(id2);
@@ -55,6 +55,45 @@ class TodoResourceTest {
         assertThat(todoItems.get(1).id()).isEqualTo(id1);
         assertThat(todoItems.get(1).done()).isTrue();
         assertThat(todoItems.get(1).content()).isEqualTo(content1);
+    }
+
+    @Test
+    public void shouldReturnSinglePageOfItems() {
+        // given
+        var content1 = "AAA";
+        var content2 = "BBB";
+        var content3 = "CCC";
+        var content4 = "DDD";
+        addItem(content1)
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+        var id2 = addItem(content2)
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+        var id3 = addItem(content3)
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+        var id4 = addItem(content4)
+            .then()
+            .statusCode(200)
+            .extract().body().as(UUID.class);
+
+        // when
+        var todoItems = getItemsPage(id4, 2)
+            .then()
+            .statusCode(200)
+            .extract().body().as(TodoItemsPage.class)
+            .items();
+
+        // then
+        assertThat(todoItems.size()).isEqualTo(2);
+        assertThat(todoItems.get(0).id()).isEqualTo(id3);
+        assertThat(todoItems.get(0).content()).isEqualTo(content3);
+        assertThat(todoItems.get(1).id()).isEqualTo(id2);
+        assertThat(todoItems.get(1).content()).isEqualTo(content2);
     }
 
     @Test
@@ -75,11 +114,11 @@ class TodoResourceTest {
             .statusCode(200);
 
         // then
-        var todoItems = getItems()
+        var todoItems = getAllItems()
             .then()
             .statusCode(200)
-            .extract().body().jsonPath()
-            .getList(".", TodoItem.class);
+            .extract().body().as(TodoItemsPage.class)
+            .items();
 
         assertThat(todoItems.size()).isEqualTo(1);
         assertThat(todoItems.get(0).done()).isFalse();
@@ -138,9 +177,17 @@ class TodoResourceTest {
             .statusCode(400);
     }
 
-    private Response getItems() {
+    private Response getAllItems() {
         return given()
             .when()
+            .get("/api/todo");
+    }
+
+    private Response getItemsPage(UUID token, int limit) {
+        return given()
+            .when()
+            .queryParam("token", token)
+            .queryParam("limit", limit)
             .get("/api/todo");
     }
 

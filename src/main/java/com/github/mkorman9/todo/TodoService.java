@@ -19,18 +19,43 @@ public class TodoService {
     @Inject
     Jdbi jdbi;
 
-    public List<TodoItem> getItems() {
-        return jdbi.withHandle(handle ->
-            handle.createQuery(
-                    "select id, content, done, created_at from todo_items order by id desc"
-                )
-                .map((rs, ctx) -> new TodoItem(
-                    (UUID) rs.getObject("id"),
-                    rs.getString("content"),
-                    rs.getBoolean("done"),
-                    rs.getTimestamp("created_at").toInstant()
-                ))
-                .list()
+    public TodoItemsPage getItemsPage(UUID pageToken, int limit) {
+        List<TodoItem> items;
+        if (pageToken == null) {
+            items = jdbi.withHandle(handle ->
+                handle.createQuery(
+                        "select id, content, done, created_at from todo_items order by id desc limit :limit"
+                    )
+                    .bind("limit", limit)
+                    .map((rs, ctx) -> new TodoItem(
+                        (UUID) rs.getObject("id"),
+                        rs.getString("content"),
+                        rs.getBoolean("done"),
+                        rs.getTimestamp("created_at").toInstant()
+                    ))
+                    .list()
+            );
+        } else {
+            items = jdbi.withHandle(handle ->
+                handle.createQuery(
+                        "select id, content, done, created_at from todo_items where :token > id " +
+                            "order by id desc limit :limit"
+                    )
+                    .bind("token", pageToken)
+                    .bind("limit", limit)
+                    .map((rs, ctx) -> new TodoItem(
+                        (UUID) rs.getObject("id"),
+                        rs.getString("content"),
+                        rs.getBoolean("done"),
+                        rs.getTimestamp("created_at").toInstant()
+                    ))
+                    .list()
+            );
+        }
+
+        return new TodoItemsPage(
+            items,
+            items.isEmpty() ? null : items.getLast().id()
         );
     }
 

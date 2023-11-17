@@ -99,13 +99,6 @@ public class TodoService {
         return findAndMark(id, false);
     }
 
-    public void deleteAll() {
-        jdbi.withHandle(handle ->
-            handle.createUpdate("delete from todo_items")
-                .execute()
-        );
-    }
-
     private boolean findAndMark(UUID id, boolean done) {
         return jdbi.inTransaction(transaction -> {
             var updated = transaction.createUpdate(
@@ -132,5 +125,12 @@ public class TodoService {
 
             return true;
         });
+    }
+
+    public void deleteAll() {
+        jdbi.withHandle(handle ->
+            handle.createUpdate("delete from todo_items")
+                .execute()
+        );
     }
 }

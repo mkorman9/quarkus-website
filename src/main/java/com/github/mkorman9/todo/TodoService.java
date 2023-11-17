@@ -22,7 +22,7 @@ public class TodoService {
     public List<TodoItem> getItems() {
         return jdbi.withHandle(handle ->
             handle.createQuery(
-                    "select id, content, done, created_at from todo_items order by created_at desc"
+                    "select id, content, done, created_at from todo_items order by id desc"
                 )
                 .map((rs, ctx) -> new TodoItem(
                     (UUID) rs.getObject("id"),

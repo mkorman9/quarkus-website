@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
+import org.jdbi.v3.core.statement.Query;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -21,33 +22,28 @@ public class TodoService {
 
     public TodoItemsPage getItemsPage(UUID pageToken, int limit) {
         var items = jdbi.withHandle(handle -> {
+            Query q;
             if (pageToken == null) {
-                return handle.createQuery(
+                q = handle.createQuery(
                         "select id, content, done, created_at from todo_items order by id desc limit :limit"
                     )
-                    .bind("limit", limit)
-                    .map((rs, ctx) -> new TodoItem(
-                        (UUID) rs.getObject("id"),
-                        rs.getString("content"),
-                        rs.getBoolean("done"),
-                        rs.getTimestamp("created_at").toInstant()
-                    ))
-                    .list();
+                    .bind("limit", limit);
             } else {
-                return handle.createQuery(
+                q = handle.createQuery(
                         "select id, content, done, created_at from todo_items where :token > id " +
                             "order by id desc limit :limit"
                     )
                     .bind("token", pageToken)
-                    .bind("limit", limit)
-                    .map((rs, ctx) -> new TodoItem(
-                        (UUID) rs.getObject("id"),
-                        rs.getString("content"),
-                        rs.getBoolean("done"),
-                        rs.getTimestamp("created_at").toInstant()
-                    ))
-                    .list();
+                    .bind("limit", limit);
             }
+
+            return q.map((rs, ctx) -> new TodoItem(
+                    (UUID) rs.getObject("id"),
+                    rs.getString("content"),
+                    rs.getBoolean("done"),
+                    rs.getTimestamp("created_at").toInstant()
+                ))
+                .list();
         });
 
         return new TodoItemsPage(

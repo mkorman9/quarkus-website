@@ -20,10 +20,9 @@ public class TodoService {
     Jdbi jdbi;
 
     public TodoItemsPage getItemsPage(UUID pageToken, int limit) {
-        List<TodoItem> items;
-        if (pageToken == null) {
-            items = jdbi.withHandle(handle ->
-                handle.createQuery(
+        var items = jdbi.withHandle(handle -> {
+            if (pageToken == null) {
+                return handle.createQuery(
                         "select id, content, done, created_at from todo_items order by id desc limit :limit"
                     )
                     .bind("limit", limit)
@@ -33,11 +32,9 @@ public class TodoService {
                         rs.getBoolean("done"),
                         rs.getTimestamp("created_at").toInstant()
                     ))
-                    .list()
-            );
-        } else {
-            items = jdbi.withHandle(handle ->
-                handle.createQuery(
+                    .list();
+            } else {
+                return handle.createQuery(
                         "select id, content, done, created_at from todo_items where :token > id " +
                             "order by id desc limit :limit"
                     )
@@ -49,9 +46,9 @@ public class TodoService {
                         rs.getBoolean("done"),
                         rs.getTimestamp("created_at").toInstant()
                     ))
-                    .list()
-            );
-        }
+                    .list();
+            }
+        });
 
         return new TodoItemsPage(
             items,

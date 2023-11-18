@@ -25,6 +25,7 @@ import java.util.UUID;
 public class TodoResource {
     @Inject
     TodoService todoService;
+
     @GET
     public TodoItemsPage getTodoItems(
         @QueryParam("token") UUID token,

@@ -27,17 +27,17 @@ class TodoResourceTest {
         // given
         var content1 = "AAA";
         var content2 = "BBB";
-        var id1 = addItem(content1)
+        var item1 = addItem(content1)
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
-        var id2 = addItem(content2)
+            .extract().body().as(TodoItemAddResponse.class);
+        var item2 = addItem(content2)
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
+            .extract().body().as(TodoItemAddResponse.class);
 
         // when
-        markItem(id1)
+        markItem(item1.id())
             .then()
             .statusCode(200);
 
@@ -49,10 +49,10 @@ class TodoResourceTest {
             .items();
 
         assertThat(todoItems.size()).isEqualTo(2);
-        assertThat(todoItems.get(0).id()).isEqualTo(id2);
+        assertThat(todoItems.get(0).id()).isEqualTo(item2.id());
         assertThat(todoItems.get(0).done()).isFalse();
         assertThat(todoItems.get(0).content()).isEqualTo(content2);
-        assertThat(todoItems.get(1).id()).isEqualTo(id1);
+        assertThat(todoItems.get(1).id()).isEqualTo(item1.id());
         assertThat(todoItems.get(1).done()).isTrue();
         assertThat(todoItems.get(1).content()).isEqualTo(content1);
     }
@@ -66,23 +66,22 @@ class TodoResourceTest {
         var content4 = "DDD";
         addItem(content1)
             .then()
-            .statusCode(200)
-            .extract().body().as(UUID.class);
-        var id2 = addItem(content2)
+            .statusCode(200);
+        var item2 = addItem(content2)
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
-        var id3 = addItem(content3)
+            .extract().body().as(TodoItemAddResponse.class);
+        var item3 = addItem(content3)
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
-        var id4 = addItem(content4)
+            .extract().body().as(TodoItemAddResponse.class);
+        var item4 = addItem(content4)
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
+            .extract().body().as(TodoItemAddResponse.class);
 
         // when
-        var todoItems = getItemsPage(2, id4)
+        var todoItems = getItemsPage(2, item4.id())
             .then()
             .statusCode(200)
             .extract().body().as(TodoItemsPage.class)
@@ -90,26 +89,26 @@ class TodoResourceTest {
 
         // then
         assertThat(todoItems.size()).isEqualTo(2);
-        assertThat(todoItems.get(0).id()).isEqualTo(id3);
+        assertThat(todoItems.get(0).id()).isEqualTo(item3.id());
         assertThat(todoItems.get(0).content()).isEqualTo(content3);
-        assertThat(todoItems.get(1).id()).isEqualTo(id2);
+        assertThat(todoItems.get(1).id()).isEqualTo(item2.id());
         assertThat(todoItems.get(1).content()).isEqualTo(content2);
     }
 
     @Test
     public void shouldUnmarkItem() {
         // given
-        var id = addItem("AAA")
+        var item = addItem("AAA")
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
+            .extract().body().as(TodoItemAddResponse.class);
 
-        markItem(id)
+        markItem(item.id())
             .then()
             .statusCode(200);
 
         // when
-        unmarkItem(id)
+        unmarkItem(item.id())
             .then()
             .statusCode(200);
 
@@ -148,13 +147,13 @@ class TodoResourceTest {
     @Test
     public void shouldFailOnUnmarkingNotMarkedItem() {
         // given
-        var id = addItem("AAA")
+        var item = addItem("AAA")
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
+            .extract().body().as(TodoItemAddResponse.class);
 
         // when then
-        unmarkItem(id)
+        unmarkItem(item.id())
             .then()
             .statusCode(400);
     }
@@ -162,17 +161,17 @@ class TodoResourceTest {
     @Test
     public void shouldFailOnMarkingAlreadyMarkedItem() {
         // given
-        var id = addItem("AAA")
+        var item = addItem("AAA")
             .then()
             .statusCode(200)
-            .extract().body().as(UUID.class);
+            .extract().body().as(TodoItemAddResponse.class);
 
-        markItem(id)
+        markItem(item.id())
             .then()
             .statusCode(200);
 
         // when then
-        markItem(id)
+        markItem(item.id())
             .then()
             .statusCode(400);
     }

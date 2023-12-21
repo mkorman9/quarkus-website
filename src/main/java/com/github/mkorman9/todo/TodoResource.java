@@ -43,8 +43,9 @@ public class TodoResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public UUID addTodoItem(@NotNull @Valid TodoItemAddPayload payload) {
-        return todoService.addItem(payload.content());
+    public TodoItemAddResponse addTodoItem(@NotNull @Valid TodoItemAddPayload payload) {
+        var id = todoService.addItem(payload.content());
+        return new TodoItemAddResponse(id);
     }
 
     @POST

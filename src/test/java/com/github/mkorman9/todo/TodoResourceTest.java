@@ -82,7 +82,7 @@ class TodoResourceTest {
             .extract().body().as(UUID.class);
 
         // when
-        var todoItems = getItemsPage(id4, 2)
+        var todoItems = getItemsPage(2, id4)
             .then()
             .statusCode(200)
             .extract().body().as(TodoItemsPage.class)
@@ -183,11 +183,11 @@ class TodoResourceTest {
             .get("/api/todo");
     }
 
-    private Response getItemsPage(UUID token, int limit) {
+    private Response getItemsPage(int pageSize, UUID pageToken) {
         return given()
             .when()
-            .queryParam("token", token)
-            .queryParam("limit", limit)
+            .queryParam("pageSize", pageSize)
+            .queryParam("pageToken", pageToken)
             .get("/api/todo");
     }
 

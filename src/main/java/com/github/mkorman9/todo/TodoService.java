@@ -2,6 +2,7 @@ package com.github.mkorman9.todo;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
+import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jdbi.v3.core.Handle;
@@ -21,11 +22,11 @@ public class TodoService {
     @Inject
     Jdbi jdbi;
 
-    public TodoItemsPage getItemsPage(UUID pageToken, int limit) {
+    public TodoItemsPage getItemsPage(int pageSize, @Nullable UUID pageToken) {
         var items = jdbi.withHandle(handle -> {
             var q = (pageToken == null)
-                ? createLimitQuery(handle, limit)
-                : createLimitQueryWithPageToken(handle, limit, pageToken);
+                ? createItemsPageQuery(handle, pageSize)
+                : createItemsPageQueryWithToken(handle, pageSize, pageToken);
 
             return q.map((rs, ctx) -> TodoItem.builder()
                     .id((UUID) rs.getObject("id"))
@@ -39,26 +40,27 @@ public class TodoService {
 
         return TodoItemsPage.builder()
             .items(items)
+            .pageSize(pageSize)
             .nextPageToken(
                 Optional.ofNullable(items.isEmpty() ? null : items.getLast().id())
             )
             .build();
     }
 
-    private Query createLimitQuery(Handle handle, int limit) {
+    private Query createItemsPageQuery(Handle handle, int pageSize) {
         return handle.createQuery(
                 "select id, content, done, created_at from todo_items order by id desc limit :limit"
             )
-            .bind("limit", limit);
+            .bind("limit", pageSize);
     }
 
-    private Query createLimitQueryWithPageToken(Handle handle, int limit, UUID pageToken) {
+    private Query createItemsPageQueryWithToken(Handle handle, int pageSize, UUID pageToken) {
         return handle.createQuery(
                 "select id, content, done, created_at from todo_items where :token > id " +
                     "order by id desc limit :limit"
             )
             .bind("token", pageToken)
-            .bind("limit", limit);
+            .bind("limit", pageSize);
     }
 
     public UUID addItem(String content) {

@@ -9,6 +9,7 @@ import java.util.UUID;
 @Builder
 public record TodoItemsPage(
     List<TodoItem> items,
+    int pageSize,
     Optional<UUID> nextPageToken
 ) {
 }

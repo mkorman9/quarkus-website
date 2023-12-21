@@ -26,12 +26,13 @@ public class TodoService {
                 ? createLimitQuery(handle, limit)
                 : createLimitQueryWithPageToken(handle, limit, pageToken);
 
-            return q.map((rs, ctx) -> new TodoItem(
-                    (UUID) rs.getObject("id"),
-                    rs.getString("content"),
-                    rs.getBoolean("done"),
-                    rs.getTimestamp("created_at").toInstant()
-                ))
+            return q.map((rs, ctx) -> TodoItem.builder()
+                    .id((UUID) rs.getObject("id"))
+                    .content(rs.getString("content"))
+                    .done(rs.getBoolean("done"))
+                    .createdAt(rs.getTimestamp("created_at").toInstant())
+                    .build()
+                )
                 .list();
         });
 

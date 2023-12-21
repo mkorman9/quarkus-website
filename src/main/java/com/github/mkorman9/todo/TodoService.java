@@ -11,6 +11,7 @@ import org.jdbi.v3.core.statement.Query;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -36,10 +37,12 @@ public class TodoService {
                 .list();
         });
 
-        return new TodoItemsPage(
-            items,
-            items.isEmpty() ? null : items.getLast().id()
-        );
+        return TodoItemsPage.builder()
+            .items(items)
+            .nextPageToken(
+                Optional.ofNullable(items.isEmpty() ? null : items.getLast().id())
+            )
+            .build();
     }
 
     private Query createLimitQuery(Handle handle, int limit) {

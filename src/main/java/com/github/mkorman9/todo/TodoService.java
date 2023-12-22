@@ -22,11 +22,15 @@ public class TodoService {
     @Inject
     Jdbi jdbi;
 
-    public TodoItemsPage getItemsPage(int pageSize, @Nullable UUID pageToken) {
+    public TodoItemsPage getItemsPage(int pageSize) {
+        return getItemsPage(pageSize, Optional.empty());
+    }
+
+    public TodoItemsPage getItemsPage(int pageSize, Optional<UUID> pageToken) {
         var items = jdbi.withHandle(handle -> {
-            var q = (pageToken == null)
-                ? createItemsPageQuery(handle, pageSize)
-                : createItemsPageQueryWithToken(handle, pageSize, pageToken);
+            var q = (pageToken.isPresent())
+                ? createItemsPageQueryWithToken(handle, pageSize, pageToken.get())
+                : createItemsPageQuery(handle, pageSize);
 
             return q
                 .map((rs, ctx) -> TodoItem.builder()

@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Path("/api/todo")
@@ -32,7 +33,7 @@ public class TodoResource {
     @GET
     public TodoItemsPage getTodoItems(
         @QueryParam("pageSize") @DefaultValue("10") int pageSize,
-        @QueryParam("pageToken") UUID pageToken
+        @QueryParam("pageToken") Optional<UUID> pageToken
     ) {
         return todoService.getItemsPage(
             Math.clamp(pageSize, MIN_PAGE_SIZE, MAX_PAGE_SIZE),

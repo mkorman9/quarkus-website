@@ -35,10 +35,10 @@ public class TodoResource {
         @QueryParam("pageSize") @DefaultValue("10") int pageSize,
         @QueryParam("pageToken") Optional<UUID> pageToken
     ) {
-        return todoService.getItemsPage(
-            Math.clamp(pageSize, MIN_PAGE_SIZE, MAX_PAGE_SIZE),
-            pageToken
-        );
+        pageSize = Math.clamp(pageSize, MIN_PAGE_SIZE, MAX_PAGE_SIZE);
+        return pageToken.isEmpty() ?
+            todoService.getFirstItemsPage(pageSize) :
+            todoService.getNextItemsPage(pageSize, pageToken.get());
     }
 
     @POST

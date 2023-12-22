@@ -2,14 +2,13 @@ package com.github.mkorman9.todo;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
-import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.JdbiException;
-import org.jdbi.v3.core.statement.Query;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -22,24 +21,13 @@ public class TodoService {
     @Inject
     Jdbi jdbi;
 
-    public TodoItemsPage getItemsPage(int pageSize) {
-        return getItemsPage(pageSize, Optional.empty());
-    }
-
-    public TodoItemsPage getItemsPage(int pageSize, Optional<UUID> pageToken) {
+    public TodoItemsPage getFirstItemsPage(int pageSize) {
         var items = jdbi.withHandle(handle -> {
-            var q = (pageToken.isPresent())
-                ? createItemsPageQueryWithToken(handle, pageSize, pageToken.get())
-                : createItemsPageQuery(handle, pageSize);
-
-            return q
-                .map((rs, ctx) -> TodoItem.builder()
-                    .id((UUID) rs.getObject("id"))
-                    .content(rs.getString("content"))
-                    .done(rs.getBoolean("done"))
-                    .createdAt(rs.getTimestamp("created_at").toInstant())
-                    .build()
+            return handle.createQuery(
+                    "select id, content, done, created_at from todo_items order by id desc limit :limit"
                 )
+                .bind("limit", pageSize)
+                .map((rs, ctx) -> extractTodoItem(rs))
                 .list();
         });
 
@@ -52,20 +40,34 @@ public class TodoService {
             .build();
     }
 
-    private Query createItemsPageQuery(Handle handle, int pageSize) {
-        return handle.createQuery(
-                "select id, content, done, created_at from todo_items order by id desc limit :limit"
+    public TodoItemsPage getNextItemsPage(int pageSize, UUID pageToken) {
+        var items = jdbi.withHandle(handle -> {
+            return handle.createQuery(
+                    "select id, content, done, created_at from todo_items where :token > id " +
+                        "order by id desc limit :limit"
+                )
+                .bind("token", pageToken)
+                .bind("limit", pageSize)
+                .map((rs, ctx) -> extractTodoItem(rs))
+                .list();
+        });
+
+        return TodoItemsPage.builder()
+            .items(items)
+            .pageSize(pageSize)
+            .nextPageToken(
+                Optional.ofNullable(items.isEmpty() ? null : items.getLast().id())
             )
-            .bind("limit", pageSize);
+            .build();
     }
 
-    private Query createItemsPageQueryWithToken(Handle handle, int pageSize, UUID pageToken) {
-        return handle.createQuery(
-                "select id, content, done, created_at from todo_items where :token > id " +
-                    "order by id desc limit :limit"
-            )
-            .bind("token", pageToken)
-            .bind("limit", pageSize);
+    private TodoItem extractTodoItem(ResultSet rs) throws SQLException {
+        return TodoItem.builder()
+            .id((UUID) rs.getObject("id"))
+            .content(rs.getString("content"))
+            .done(rs.getBoolean("done"))
+            .createdAt(rs.getTimestamp("created_at").toInstant())
+            .build();
     }
 
     public UUID addItem(String content) {

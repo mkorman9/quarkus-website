@@ -31,14 +31,10 @@ public class TodoResource {
         @QueryParam("pageSize") @DefaultValue("10") int pageSize,
         @QueryParam("pageToken") UUID pageToken
     ) {
-        if (pageSize < 1) {
-            pageSize = 1;
-        }
-        if (pageSize > 100) {
-            pageSize = 100;
-        }
-
-        return todoService.getItemsPage(pageSize, pageToken);
+        return todoService.getItemsPage(
+            Math.clamp(pageSize, 1, 100),
+            pageToken
+        );
     }
 
     @POST

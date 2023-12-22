@@ -28,7 +28,8 @@ public class TodoService {
                 ? createItemsPageQuery(handle, pageSize)
                 : createItemsPageQueryWithToken(handle, pageSize, pageToken);
 
-            return q.map((rs, ctx) -> TodoItem.builder()
+            return q
+                .map((rs, ctx) -> TodoItem.builder()
                     .id((UUID) rs.getObject("id"))
                     .content(rs.getString("content"))
                     .done(rs.getBoolean("done"))

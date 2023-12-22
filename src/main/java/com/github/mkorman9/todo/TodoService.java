@@ -115,7 +115,7 @@ public class TodoService {
     private boolean findAndMark(UUID id, boolean done) {
         return jdbi.inTransaction(transaction -> {
             var updated = transaction.createUpdate(
-                    "update todo_items set done=:value where id=:id and done != :value"
+                    "update todo_items set done = :value where id = :id and done != :value"
                 )
                 .bind("id", id)
                 .bind("value", done)

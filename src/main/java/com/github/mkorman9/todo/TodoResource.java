@@ -23,6 +23,9 @@ import java.util.UUID;
 @Consumes({})
 @RunOnVirtualThread
 public class TodoResource {
+    private static final int MIN_PAGE_SIZE = 1;
+    private static final int MAX_PAGE_SIZE = 100;
+
     @Inject
     TodoService todoService;
 
@@ -32,7 +35,7 @@ public class TodoResource {
         @QueryParam("pageToken") UUID pageToken
     ) {
         return todoService.getItemsPage(
-            Math.clamp(pageSize, 1, 100),
+            Math.clamp(pageSize, MIN_PAGE_SIZE, MAX_PAGE_SIZE),
             pageToken
         );
     }
